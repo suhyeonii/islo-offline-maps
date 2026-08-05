@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "release": "v0.1.0",
+  "generatedAt": "2026-08-05T00:00:00Z",
+  "regions": [
+    {"id":"seoul","name":"서울","available":false},
+    {"id":"busan","name":"부산","available":false},
+    {"id":"daegu","name":"대구","available":false},
+    {"id":"incheon","name":"인천","available":false},
+    {"id":"gwangju","name":"광주","available":false},
+    {"id":"daejeon","name":"대전","available":false},
+    {"id":"ulsan","name":"울산","available":false},
+    {"id":"sejong","name":"세종","available":false},
+    {"id":"gyeonggi","name":"경기","available":false},
+    {"id":"gangwon","name":"강원","available":false},
+    {"id":"chungbuk","name":"충북","available":false},
+    {"id":"chungnam","name":"충남","available":false},
+    {"id":"jeonbuk","name":"전북","available":false},
+    {"id":"jeonnam","name":"전남","available":false},
+    {"id":"gyeongbuk","name":"경북","available":false},
+    {"id":"gyeongnam","name":"경남","available":false},
+    {"id":"jeju","name":"제주","available":false}
+  ]
+}
