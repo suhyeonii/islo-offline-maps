@@ -1,9 +1,9 @@
 {
   "schemaVersion": 2,
   "release": "v0.1.0",
-  "generatedAt": "2026-08-05T14:45:00+09:00",
+  "generatedAt": "2026-08-05T15:30:00+09:00",
   "baseURL": "https://github.com/suhyeonii/islo-offline-maps/releases/download/v0.1.0",
-  "nationwideRouting": {"file":"korea.routing.sqlite","size":288305152,"sha256":"c2aeec848627396e65b2aee09b06dafd1c835203b12b8fc32fa7d0d1e445e188"},
+  "nationwideRouting": {"file":"korea.routing.sqlite","size":288968704,"sha256":"9179e1787d4e1a975f2a6adfa3629792e7c85b0f53faf13be25a9e1b701e2e31"},
   "regions": [
     {"id":"seoul","name":"서울","south":37.41,"west":126.76,"north":37.72,"east":127.20,"available":true,"mapFile":"seoul.pmtiles","size":22348913,"sha256":"66f1f4597237c6097595c96dac46744b970c65163f6b76477a8386a78c66aa5e","routing":{"file":"seoul.routing.sqlite","size":100855808,"sha256":"7fe8f88733a44b82812c8789c6db5c3e20db0fcea1c98bcf0d41e3e78d72f8e9"}},
     {"id":"busan","name":"부산","south":34.95,"west":128.75,"north":35.39,"east":129.32,"available":true,"mapFile":"busan.pmtiles","size":7972484,"sha256":"1561b6155823100b051089c8d2bae8cc6a9da1742c1dc8d6c9d690a8250b4611","routing":{"file":"busan.routing.sqlite","size":55910400,"sha256":"74270707c4d87f6e36cd87e4c2059e21727d0560335d3cc0ed6ec9fea20d6d0f"}},
