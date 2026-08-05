@@ -102,6 +102,8 @@ def main() -> None:
       CREATE TABLE edges(src INTEGER NOT NULL, dst INTEGER NOT NULL,
                          meters REAL NOT NULL, cost REAL NOT NULL,
                          PRIMARY KEY(src, dst)) WITHOUT ROWID;
+      CREATE TABLE amenities(node_id INTEGER PRIMARY KEY, kind TEXT NOT NULL,
+                             name TEXT, lat REAL NOT NULL, lon REAL NOT NULL);
       CREATE TABLE official_routes(id INTEGER PRIMARY KEY, name TEXT NOT NULL);
       CREATE TABLE official_nodes(node_id INTEGER NOT NULL, route_id INTEGER NOT NULL,
                                   sequence INTEGER NOT NULL,
@@ -111,6 +113,7 @@ def main() -> None:
     database.execute("INSERT INTO metadata VALUES('kind',?)", ("compact" if args.compact else "detail",))
     pending_nodes: list[tuple[int, float, float]] = []
     pending_edges: list[tuple[int, int, float, float]] = []
+    pending_amenities: list[tuple[int, str, str | None, float, float]] = []
     did_flush_nodes = False
 
     for line in sys.stdin:
@@ -120,6 +123,13 @@ def main() -> None:
             lon = next((float(value[1:]) for value in fields if value.startswith("x")), None)
             lat = next((float(value[1:]) for value in fields if value.startswith("y")), None)
             if lat is not None and lon is not None:
+                raw_tags = next((value[1:] for value in fields if value.startswith("T")), "")
+                node_tags = tags(raw_tags)
+                amenity = node_tags.get("amenity")
+                if amenity in {"drinking_water", "toilets"}:
+                    pending_amenities.append(
+                        (node_id, amenity, node_tags.get("name"), lat, lon)
+                    )
                 cell = (int(lat / grid_size), int(lon / grid_size))
                 for latitude_cell in range(cell[0] - 1, cell[0] + 2):
                     for longitude_cell in range(cell[1] - 1, cell[1] + 2):
@@ -172,8 +182,10 @@ def main() -> None:
 
     database.executemany("INSERT OR IGNORE INTO nodes VALUES(?,?,?)", pending_nodes)
     database.executemany("INSERT OR REPLACE INTO edges VALUES(?,?,?,?)", pending_edges)
+    database.executemany("INSERT OR REPLACE INTO amenities VALUES(?,?,?,?,?)", pending_amenities)
     database.executescript("""
       CREATE INDEX nodes_lat ON nodes(lat);
+      CREATE INDEX amenities_lat ON amenities(lat);
       ANALYZE;
     """)
     if args.official_csv:

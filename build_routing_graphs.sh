@@ -22,11 +22,13 @@ build_graph() {
     osmium tags-filter --overwrite "$source" \
       w/highway=cycleway w/highway=trunk w/highway=primary w/highway=secondary \
       w/highway=tertiary \
-      w/bicycle=designated w/bicycle=official -o "$filtered"
+      w/bicycle=designated w/bicycle=official \
+      n/amenity=drinking_water n/amenity=toilets -o "$filtered"
     osmium cat "$filtered" -f opl | python3 ./build_routing_graph.py \
       --compact --official-csv ./official_cycle_routes.csv "$output"
   else
-    osmium tags-filter --overwrite "$source" w/highway -o "$filtered"
+    osmium tags-filter --overwrite "$source" w/highway \
+      n/amenity=drinking_water n/amenity=toilets -o "$filtered"
     osmium cat "$filtered" -f opl | python3 ./build_routing_graph.py \
       --official-csv ./official_cycle_routes.csv "$output"
   fi
