@@ -29,6 +29,12 @@ def penalty(values: dict[str, str], compact: bool) -> float | None:
     bicycle = values.get("bicycle", "")
     if bicycle in {"no", "private"} or highway in {"motorway", "motorway_link", "steps"}:
         return None
+    if highway == "footway":
+        # Keep pedestrian-only paths out of bicycle routing, but preserve mapped
+        # riverside entrances and crossings where OSM explicitly permits bicycles.
+        if bicycle not in {"yes", "designated", "official"}:
+            return None
+        return 0.62 if bicycle == "yes" else 0.48
     dedicated = highway == "cycleway" or bicycle in {"designated", "official"}
     if compact and not dedicated and highway not in {
         "trunk", "primary", "secondary", "tertiary", "track", "path"
