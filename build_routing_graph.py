@@ -24,18 +24,73 @@ def tags(raw: str) -> dict[str, str]:
     return result
 
 
-def penalty(values: dict[str, str], compact: bool) -> float | None:
+ALLOWED_BICYCLE = {"yes", "designated", "official", "permissive"}
+FORBIDDEN_ACCESS = {"no", "private"}
+PAVED_SURFACES = {
+    "paved", "asphalt", "concrete", "concrete:plates", "concrete:lanes",
+    "paving_stones", "sett", "unhewn_cobblestone", "compacted", "fine_gravel",
+}
+UNSUITABLE_CITY_BICYCLE_SURFACES = {
+    "dirt", "earth", "ground", "mud", "sand", "grass", "woodchips",
+}
+
+
+def bicycle_profile(values: dict[str, str], compact: bool) -> tuple[float, int] | None:
+    """Return an OSRM-inspired cost multiplier and dedicated-cycleway flag.
+
+    This intentionally stays a compact, auditable policy instead of embedding
+    libosrm. Access tags are resolved before road-class preferences, while
+    surface/smoothness and cycleway facilities modify the traversal rate.
+    """
     highway = values.get("highway", "")
     bicycle = values.get("bicycle", "")
-    if bicycle in {"no", "private"} or highway in {"motorway", "motorway_link", "steps"}:
+    access = values.get("access", "")
+    vehicle = values.get("vehicle", "")
+    bicycle_allowed = bicycle in ALLOWED_BICYCLE
+    if (
+        bicycle in FORBIDDEN_ACCESS
+        or (access in FORBIDDEN_ACCESS and not bicycle_allowed)
+        or (vehicle in FORBIDDEN_ACCESS and not bicycle_allowed)
+        or highway in {"motorway", "motorway_link", "steps"}
+    ):
         return None
+    if values.get("route") == "ferry":
+        return (1.8, 0) if bicycle_allowed else None
     if highway == "footway":
-        # Keep pedestrian-only paths out of bicycle routing, but preserve mapped
-        # riverside entrances and crossings where OSM explicitly permits bicycles.
-        if bicycle not in {"yes", "designated", "official"}:
+        # Most generic footways are sidewalks, so they must never become a normal
+        # bicycle choice. Some parks, riverside entrances and public facilities,
+        # however, connect a bicycle-permitted path to the only legal road access
+        # through an untagged short footway. Keep those as an expensive last-resort
+        # connector while continuing to exclude stairs, restricted access and
+        # unsuitable/mountain-like surfaces above.
+        if bicycle in {"yes", "designated", "official"}:
+            return (0.72 if bicycle == "yes" else 0.52, 1)
+        if values.get("sac_scale") or values.get("surface", "") in UNSUITABLE_CITY_BICYCLE_SURFACES:
             return None
-        return 0.62 if bicycle == "yes" else 0.48
-    dedicated = highway == "cycleway" or bicycle in {"designated", "official"}
+        return (3.8, 0)
+    if highway == "path":
+        surface = values.get("surface", "")
+        is_hiking_path = (
+            bool(values.get("sac_scale"))
+            or values.get("foot") == "designated"
+            or surface in UNSUITABLE_CITY_BICYCLE_SURFACES
+        )
+        # Generic OSM `path` includes everything from paved shared-use trails to
+        # steep mountain footpaths. Without an affirmative bicycle tag, only
+        # surfaces suitable for ordinary city bicycles belong in this router.
+        if not bicycle_allowed and (is_hiking_path or surface not in PAVED_SURFACES):
+            return None
+    cycleway = values.get("cycleway", "")
+    cycleway_left = values.get("cycleway:left", "")
+    cycleway_right = values.get("cycleway:right", "")
+    facility_values = {cycleway, cycleway_left, cycleway_right}
+    has_protected_facility = bool(facility_values & {"track", "separate"})
+    has_cycle_lane = bool(facility_values & {"lane", "shared_lane", "share_busway"})
+    dedicated = (
+        highway == "cycleway"
+        or bicycle in {"designated", "official"}
+        or has_protected_facility
+    )
     if compact and not dedicated and highway not in {
         "trunk", "primary", "secondary", "tertiary", "track", "path"
     }:
@@ -48,7 +103,32 @@ def penalty(values: dict[str, str], compact: bool) -> float | None:
     }.get(highway)
     if base is None:
         return None
-    return min(base, 0.48) if dedicated else base
+    if dedicated:
+        base = min(base, 0.48)
+    elif has_cycle_lane:
+        base *= 0.78
+
+    surface = values.get("surface", "")
+    smoothness = values.get("smoothness", "")
+    if surface in {"cobblestone", "cobblestone:flattened", "gravel", "pebblestone"}:
+        base *= 1.35
+    elif surface in UNSUITABLE_CITY_BICYCLE_SURFACES:
+        base *= 1.8
+    if smoothness in {"bad", "very_bad"}:
+        base *= 1.35
+    elif smoothness in {"horrible", "very_horrible", "impassable"}:
+        return None
+
+    # Dismount sections remain usable as short connectors but must never beat a
+    # normal rideable road or a mapped cycleway.
+    if bicycle == "dismount":
+        base = max(base, 2.4)
+    return base, int(dedicated)
+
+
+def penalty(values: dict[str, str], compact: bool) -> float | None:
+    profile = bicycle_profile(values, compact)
+    return profile[0] if profile else None
 
 
 def haversine(a: tuple[float, float], b: tuple[float, float]) -> float:
@@ -101,6 +181,7 @@ def main() -> None:
       CREATE TABLE nodes(id INTEGER PRIMARY KEY, lat REAL NOT NULL, lon REAL NOT NULL);
       CREATE TABLE edges(src INTEGER NOT NULL, dst INTEGER NOT NULL,
                          meters REAL NOT NULL, cost REAL NOT NULL,
+                         is_cycleway INTEGER NOT NULL DEFAULT 0,
                          PRIMARY KEY(src, dst)) WITHOUT ROWID;
       CREATE TABLE amenities(node_id INTEGER PRIMARY KEY, kind TEXT NOT NULL,
                              name TEXT, lat REAL NOT NULL, lon REAL NOT NULL);
@@ -109,10 +190,10 @@ def main() -> None:
                                   sequence INTEGER NOT NULL,
                                   PRIMARY KEY(node_id, route_id)) WITHOUT ROWID;
     """)
-    database.execute("INSERT INTO metadata VALUES('schemaVersion','1')")
+    database.execute("INSERT INTO metadata VALUES('schemaVersion','2')")
     database.execute("INSERT INTO metadata VALUES('kind',?)", ("compact" if args.compact else "detail",))
     pending_nodes: list[tuple[int, float, float]] = []
-    pending_edges: list[tuple[int, int, float, float]] = []
+    pending_edges: list[tuple[int, int, float, float, int]] = []
     pending_amenities: list[tuple[int, str, str | None, float, float]] = []
     did_flush_nodes = False
 
@@ -154,9 +235,10 @@ def main() -> None:
             if not match:
                 continue
             values = tags(match.group(1))
-            weight = penalty(values, args.compact)
-            if weight is None:
+            profile = bicycle_profile(values, args.compact)
+            if profile is None:
                 continue
+            weight, is_cycleway = profile
             refs = [int(value.lstrip("n")) for value in match.group(2).split(",")]
             placeholders = ",".join("?" for _ in refs)
             way_coordinates = {
@@ -165,26 +247,39 @@ def main() -> None:
                     f"SELECT id,lat,lon FROM nodes WHERE id IN ({placeholders})", refs
                 )
             }
-            oneway = values.get("oneway") in {"yes", "1", "true"}
-            reverse = values.get("oneway") == "-1"
+            bicycle_oneway = values.get("oneway:bicycle", values.get("bicycle:oneway", ""))
+            general_oneway = values.get("oneway", "")
+            if bicycle_oneway in {"no", "0", "false"}:
+                oneway = reverse = False
+            else:
+                oneway = (
+                    bicycle_oneway in {"yes", "1", "true"}
+                    or general_oneway in {"yes", "1", "true"}
+                    or values.get("junction") == "roundabout"
+                )
+                reverse = bicycle_oneway == "-1" or general_oneway == "-1"
             for source, destination in zip(refs, refs[1:]):
                 if source not in way_coordinates or destination not in way_coordinates:
                     continue
                 meters = haversine(way_coordinates[source], way_coordinates[destination])
+                edge_source, edge_destination = source, destination
                 if reverse:
-                    source, destination = destination, source
-                pending_edges.append((source, destination, meters, meters * weight))
+                    edge_source, edge_destination = destination, source
+                pending_edges.append(
+                    (edge_source, edge_destination, meters, meters * weight, is_cycleway)
+                )
                 if not oneway and not reverse:
-                    pending_edges.append((destination, source, meters, meters * weight))
+                    pending_edges.append((destination, source, meters, meters * weight, is_cycleway))
                 if len(pending_edges) >= 100_000:
-                    database.executemany("INSERT OR REPLACE INTO edges VALUES(?,?,?,?)", pending_edges)
+                    database.executemany("INSERT OR REPLACE INTO edges VALUES(?,?,?,?,?)", pending_edges)
                     pending_edges.clear()
 
     database.executemany("INSERT OR IGNORE INTO nodes VALUES(?,?,?)", pending_nodes)
-    database.executemany("INSERT OR REPLACE INTO edges VALUES(?,?,?,?)", pending_edges)
+    database.executemany("INSERT OR REPLACE INTO edges VALUES(?,?,?,?,?)", pending_edges)
     database.executemany("INSERT OR REPLACE INTO amenities VALUES(?,?,?,?,?)", pending_amenities)
     database.executescript("""
       CREATE INDEX nodes_lat ON nodes(lat);
+      CREATE INDEX edges_cycleway ON edges(is_cycleway,src);
       CREATE INDEX amenities_lat ON amenities(lat);
       ANALYZE;
     """)
