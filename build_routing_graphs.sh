@@ -2,14 +2,15 @@
 set -euo pipefail
 
 source_pbf="build/south-korea-latest.osm.pbf"
+version="${ROUTING_VERSION:-v7}"
 build_graph() {
   local id="$1"
   local bbox="$2"
   local mode="$3"
   local source="$source_pbf"
-  local extracted="build/${id}.routing.osm.pbf"
-  local filtered="build/${id}.routing.filtered.osm.pbf"
-  local output="build/${id}.routing.sqlite"
+  local extracted="build/${id}.routing.${version}.osm.pbf"
+  local filtered="build/${id}.routing.${version}.filtered.osm.pbf"
+  local output="build/${id}.routing.${version}.sqlite"
   if [[ -f "$output" ]]; then
     echo "Skipping existing ${output}"
     return
@@ -21,7 +22,7 @@ build_graph() {
   if [[ "$mode" == "compact" ]]; then
     osmium tags-filter --overwrite "$source" \
       w/highway=cycleway w/highway=trunk w/highway=primary w/highway=secondary \
-      w/highway=tertiary \
+      w/highway=tertiary w/highway=service w/highway=footway w/highway=path \
       w/bicycle=designated w/bicycle=official \
       n/amenity=drinking_water n/amenity=toilets -o "$filtered"
     osmium cat "$filtered" -f opl | python3 ./build_routing_graph.py \

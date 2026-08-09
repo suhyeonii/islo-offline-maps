@@ -106,7 +106,7 @@ def bicycle_profile(values: dict[str, str], compact: bool) -> tuple[float, int] 
         or bicycle in {"designated", "official"}
         or has_protected_facility
     )
-    if compact and not dedicated and highway not in {
+    if compact and not dedicated and not pedestrian_connector and highway not in {
         "trunk", "primary", "secondary", "tertiary", "track", "path"
     }:
         return None

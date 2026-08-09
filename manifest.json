@@ -1,45 +1,389 @@
 {
   "schemaVersion": 2,
-  "release": "v0.1.0-routing7",
-  "generatedAt": "2026-08-09T00:12:00+09:00",
+  "release": "v0.1.0-routing7-national",
+  "generatedAt": "2026-08-09T14:45:57+09:00",
   "baseURL": "https://github.com/suhyeonii/islo-offline-maps/releases/download/v0.1.0",
-  "nationwideRouting": {"file":"korea.routing.v3.sqlite","size":289947648,"sha256":"2bc1afb4f2b954588a5f3f3b90fa547e0a490217e858f7482bf84016bae5c45a"},
+  "nationwideRouting": {
+    "file": "korea.routing.v7.sqlite",
+    "size": 827121664,
+    "sha256": "a46e80f4ffbf701ef09a6414e9df9b457e35054b49a4d5473637336a7eba26aa"
+  },
   "searchIndexes": {
-    "seoul":{"file":"seoul.places.v1.sqlite","size":38387712,"sha256":"dd948b3c5ff86fb9d4714d97d1640c02f1329bb2c4fd220e611690077267b025"},
-    "busan":{"file":"busan.places.v1.sqlite","size":4009984,"sha256":"5c47d1850ec5833433617f731a3906df26e2b10435be9b127092891c668f99ba"},
-    "daegu":{"file":"daegu.places.v1.sqlite","size":2420736,"sha256":"00ac65fc05426f2ac6abcb52b3aeab09134f8a17fd61b2e9153ee29b86496cc2"},
-    "incheon":{"file":"incheon.places.v1.sqlite","size":7565312,"sha256":"09a1d11e1af0f2e907bf09179179c3fe2a0fe267754748322488c2315b447850"},
-    "gwangju":{"file":"gwangju.places.v1.sqlite","size":2928640,"sha256":"6ba59d1ead9a204f343f86da3bb31fd7c3ca624b6be27165999cbd002fde711e"},
-    "daejeon":{"file":"daejeon.places.v1.sqlite","size":2265088,"sha256":"72854ca478a59f8eaaa14a6bd6645702c7288f5419ed08bc325207b5d57d42b5"},
-    "ulsan":{"file":"ulsan.places.v1.sqlite","size":2138112,"sha256":"af3c248acce7c399e77bec483b8a4af84b0faa1ab414fa0a31e8902c95214d58"},
-    "sejong":{"file":"sejong.places.v1.sqlite","size":1196032,"sha256":"314768d7b835d45477ca436b8d7d8c566daa7bf50352f6cd34a3537a0e2ef8c2"},
-    "gyeonggi":{"file":"gyeonggi.places.v1.sqlite","size":59805696,"sha256":"4c402745033e5326189625e14c93be096b6446c110ca0fc933a3843ce39f86cb"},
-    "gangwon":{"file":"gangwon.places.v1.sqlite","size":24297472,"sha256":"05d25f2ad3fef45f925125b79f2b6cb34e8c0ed18d66a32716e57d5590fa51d3"},
-    "chungbuk":{"file":"chungbuk.places.v1.sqlite","size":7200768,"sha256":"8a95347354cfd066764372f3c41f0ad9f1f90b49e552cf67562158e3253d13b4"},
-    "chungnam":{"file":"chungnam.places.v1.sqlite","size":10088448,"sha256":"ae4b4410925152c75b97293d299873719352cce865e1c6a7050dd19046b2a47d"},
-    "jeonbuk":{"file":"jeonbuk.places.v1.sqlite","size":4091904,"sha256":"f7d8299a415c5783088b52d93b3bca65e6d1dd8e3a702c62643c1f9b5adf4101"},
-    "jeonnam":{"file":"jeonnam.places.v1.sqlite","size":8679424,"sha256":"2d95777b4ff83283f7ce7a702961e84f1486078cec84048f5060474590918675"},
-    "gyeongbuk":{"file":"gyeongbuk.places.v1.sqlite","size":10248192,"sha256":"d48c3295264f85b5612e8e288be7a07c088652cccea6569c7818c0b6ff181399"},
-    "gyeongnam":{"file":"gyeongnam.places.v1.sqlite","size":13549568,"sha256":"7d2ffa65428f798580e9b025570a92c2340b37d1c7db58cc2698f2cb8c3643f7"},
-    "jeju":{"file":"jeju.places.v1.sqlite","size":3026944,"sha256":"c6e1ba19e77561cd747063e0fbf14ad14c6945d6da26671c851fa1cdfd425246"}
+    "seoul": {
+      "file": "seoul.places.v1.sqlite",
+      "size": 38387712,
+      "sha256": "dd948b3c5ff86fb9d4714d97d1640c02f1329bb2c4fd220e611690077267b025"
+    },
+    "busan": {
+      "file": "busan.places.v1.sqlite",
+      "size": 4009984,
+      "sha256": "5c47d1850ec5833433617f731a3906df26e2b10435be9b127092891c668f99ba"
+    },
+    "daegu": {
+      "file": "daegu.places.v1.sqlite",
+      "size": 2420736,
+      "sha256": "00ac65fc05426f2ac6abcb52b3aeab09134f8a17fd61b2e9153ee29b86496cc2"
+    },
+    "incheon": {
+      "file": "incheon.places.v1.sqlite",
+      "size": 7565312,
+      "sha256": "09a1d11e1af0f2e907bf09179179c3fe2a0fe267754748322488c2315b447850"
+    },
+    "gwangju": {
+      "file": "gwangju.places.v1.sqlite",
+      "size": 2928640,
+      "sha256": "6ba59d1ead9a204f343f86da3bb31fd7c3ca624b6be27165999cbd002fde711e"
+    },
+    "daejeon": {
+      "file": "daejeon.places.v1.sqlite",
+      "size": 2265088,
+      "sha256": "72854ca478a59f8eaaa14a6bd6645702c7288f5419ed08bc325207b5d57d42b5"
+    },
+    "ulsan": {
+      "file": "ulsan.places.v1.sqlite",
+      "size": 2138112,
+      "sha256": "af3c248acce7c399e77bec483b8a4af84b0faa1ab414fa0a31e8902c95214d58"
+    },
+    "sejong": {
+      "file": "sejong.places.v1.sqlite",
+      "size": 1196032,
+      "sha256": "314768d7b835d45477ca436b8d7d8c566daa7bf50352f6cd34a3537a0e2ef8c2"
+    },
+    "gyeonggi": {
+      "file": "gyeonggi.places.v1.sqlite",
+      "size": 59805696,
+      "sha256": "4c402745033e5326189625e14c93be096b6446c110ca0fc933a3843ce39f86cb"
+    },
+    "gangwon": {
+      "file": "gangwon.places.v1.sqlite",
+      "size": 24297472,
+      "sha256": "05d25f2ad3fef45f925125b79f2b6cb34e8c0ed18d66a32716e57d5590fa51d3"
+    },
+    "chungbuk": {
+      "file": "chungbuk.places.v1.sqlite",
+      "size": 7200768,
+      "sha256": "8a95347354cfd066764372f3c41f0ad9f1f90b49e552cf67562158e3253d13b4"
+    },
+    "chungnam": {
+      "file": "chungnam.places.v1.sqlite",
+      "size": 10088448,
+      "sha256": "ae4b4410925152c75b97293d299873719352cce865e1c6a7050dd19046b2a47d"
+    },
+    "jeonbuk": {
+      "file": "jeonbuk.places.v1.sqlite",
+      "size": 4091904,
+      "sha256": "f7d8299a415c5783088b52d93b3bca65e6d1dd8e3a702c62643c1f9b5adf4101"
+    },
+    "jeonnam": {
+      "file": "jeonnam.places.v1.sqlite",
+      "size": 8679424,
+      "sha256": "2d95777b4ff83283f7ce7a702961e84f1486078cec84048f5060474590918675"
+    },
+    "gyeongbuk": {
+      "file": "gyeongbuk.places.v1.sqlite",
+      "size": 10248192,
+      "sha256": "d48c3295264f85b5612e8e288be7a07c088652cccea6569c7818c0b6ff181399"
+    },
+    "gyeongnam": {
+      "file": "gyeongnam.places.v1.sqlite",
+      "size": 13549568,
+      "sha256": "7d2ffa65428f798580e9b025570a92c2340b37d1c7db58cc2698f2cb8c3643f7"
+    },
+    "jeju": {
+      "file": "jeju.places.v1.sqlite",
+      "size": 3026944,
+      "sha256": "c6e1ba19e77561cd747063e0fbf14ad14c6945d6da26671c851fa1cdfd425246"
+    }
   },
   "regions": [
-    {"id":"seoul","name":"서울","south":37.41,"west":126.76,"north":37.72,"east":127.20,"available":true,"mapFile":"seoul.pmtiles","size":22348913,"sha256":"66f1f4597237c6097595c96dac46744b970c65163f6b76477a8386a78c66aa5e","routing":{"file":"seoul.routing.v7.sqlite","size":140029952,"sha256":"0b54e3a0654eedfa1f4f505630877756c84b87bfa511285280956b7dac7f67a0"}},
-    {"id":"busan","name":"부산","south":34.95,"west":128.75,"north":35.39,"east":129.32,"available":true,"mapFile":"busan.pmtiles","size":7972484,"sha256":"1561b6155823100b051089c8d2bae8cc6a9da1742c1dc8d6c9d690a8250b4611","routing":{"file":"busan.routing.v3.sqlite","size":56070144,"sha256":"75719e71343cc883e7be7e5b389d504dcdb7dad050492aa62157304479e7aa6d"}},
-    {"id":"daegu","name":"대구","south":35.55,"west":128.35,"north":36.02,"east":129.02,"available":true,"mapFile":"daegu.pmtiles","size":8635279,"sha256":"4297bc02ba14059374114c1db3731009d7062bd60883e02bc71d1225772f199c","routing":{"file":"daegu.routing.v3.sqlite","size":73981952,"sha256":"be31dda301e899e2a4a7bd129e7b5e305a301288b0bf01bc1b01355b1e717692"}},
-    {"id":"incheon","name":"인천","south":37.30,"west":126.20,"north":37.72,"east":126.82,"available":true,"mapFile":"incheon.pmtiles","size":12250987,"sha256":"d6128f56e230549321af453ec89c192072c236756781c3eaefb279231ccc60aa","routing":{"file":"incheon.routing.v3.sqlite","size":64577536,"sha256":"729d84aa71b79530721f32de62038ee35a6da33121c44f88301b804af8ba885d"}},
-    {"id":"gwangju","name":"광주","south":35.00,"west":126.64,"north":35.30,"east":127.02,"available":true,"mapFile":"gwangju.pmtiles","size":6956286,"sha256":"dbd651036cd8c95912f5d01bde5cd485981e17134547b55782a1488c18f2f309","routing":{"file":"gwangju.routing.v3.sqlite","size":46837760,"sha256":"24c712675c09e7b5d52c8e97886d813a1c50b758396905b5d4b3be9014891ade"}},
-    {"id":"daejeon","name":"대전","south":36.17,"west":127.18,"north":36.50,"east":127.56,"available":true,"mapFile":"daejeon.pmtiles","size":5968683,"sha256":"2906c3b281f4d36a78174be4bb51fffea87a233a6a82854e7223d175fdbb8eb6","routing":{"file":"daejeon.routing.v3.sqlite","size":49569792,"sha256":"66d18623ccdee0b91b174f9aa07720cefe87eb4d559d94ee3a1d25198a0e80ab"}},
-    {"id":"ulsan","name":"울산","south":35.30,"west":129.00,"north":35.73,"east":129.49,"available":true,"mapFile":"ulsan.pmtiles","size":5976477,"sha256":"ba2f7c7439f73374ce09b0509a941a238469c5332b2ad0c3f74f5c9a42ac7b5a","routing":{"file":"ulsan.routing.v3.sqlite","size":53358592,"sha256":"e376939af2ea1647a543dda2eaba0d42799e081e05395962b46ee2feafa8d9ed"}},
-    {"id":"sejong","name":"세종","south":36.42,"west":127.12,"north":36.73,"east":127.38,"available":true,"mapFile":"sejong.pmtiles","size":3980268,"sha256":"c2e4c66c54c4326f7621933e80b98497a7fc79bafe47dcf375fac81ef5e96776","routing":{"file":"sejong.routing.v3.sqlite","size":30846976,"sha256":"0fde60683e72e17a8303ea0eccf3d202de544b3875a04a4240e0f005f9d39fe6"}},
-    {"id":"gyeonggi","name":"경기","south":36.88,"west":126.36,"north":38.30,"east":127.86,"available":true,"mapFile":"gyeonggi.pmtiles","size":77264015,"sha256":"85056360d067671232394b675d4c00e0c3bc31117e6ca5ca5d8bda8c07dd01a6","routing":{"file":"gyeonggi.routing.v3.sqlite","size":473030656,"sha256":"bd80df429cf8f8a297e57d0b8ba2247a35b148ae83eef9d051f71534ce3c53af"}},
-    {"id":"gangwon","name":"강원","south":37.02,"west":127.05,"north":38.62,"east":129.37,"available":true,"mapFile":"gangwon.pmtiles","size":52569329,"sha256":"089f7d5bae512d45a29d6477d5eac6af8a8d9cd16b4e95632df5012e6169cf23","routing":{"file":"gangwon.routing.v3.sqlite","size":400252928,"sha256":"595300adbe0fa2cf1d39ef38e39cfa58cfd8737efb03bf285edf15ab739749df"}},
-    {"id":"chungbuk","name":"충북","south":36.00,"west":127.25,"north":37.25,"east":128.65,"available":true,"mapFile":"chungbuk.pmtiles","size":38130028,"sha256":"f73a638ad9414834fe24144d3339ea3ff0d303f94d9ba5fc491535afe900becc","routing":{"file":"chungbuk.routing.v3.sqlite","size":344506368,"sha256":"5ddb2dbf58d205701f8b6661348c17b00ef010172928e50a19e9ea67c97a815b"}},
-    {"id":"chungnam","name":"충남","south":35.95,"west":125.95,"north":37.10,"east":127.65,"available":true,"mapFile":"chungnam.pmtiles","size":43607860,"sha256":"056231f0edfc489ea33ebd81d3b91608ba05c4d2aaddd5a1e30725a2938d28f7","routing":{"file":"chungnam.routing.v3.sqlite","size":366174208,"sha256":"939ea77e0fc784340c415665c686f7f11a4f34a979b29cc39116dc03da652e39"}},
-    {"id":"jeonbuk","name":"전북","south":35.28,"west":126.30,"north":36.18,"east":127.88,"available":true,"mapFile":"jeonbuk.pmtiles","size":31424813,"sha256":"db63539bc8c696cad991e2f496b39d709e7953dafb50abc2117af8c064631f7f","routing":{"file":"jeonbuk.routing.v3.sqlite","size":240410624,"sha256":"6197176db1991928b0630fcbdcfa8ca12ba9c6d929cf1ad73ddcf820deda6510"}},
-    {"id":"jeonnam","name":"전남","south":33.90,"west":125.85,"north":35.50,"east":127.88,"available":true,"mapFile":"jeonnam.pmtiles","size":40206698,"sha256":"dc74617fee16af2a292758d7884bffc73dba8169d8c9bbb339d309f5add22903","routing":{"file":"jeonnam.routing.v3.sqlite","size":358678528,"sha256":"2b10ed6b37cc78a57a0f2e72d11cb92ee042dc933293eb59cfaee62594fa0c62"}},
-    {"id":"gyeongbuk","name":"경북","south":35.55,"west":127.80,"north":37.58,"east":130.95,"available":true,"mapFile":"gyeongbuk.pmtiles","size":57016219,"sha256":"ea574bf50dbf4fd63b84afac1c757a093b389dab44134d1e28dcd2c54adfec29","routing":{"file":"gyeongbuk.routing.v3.sqlite","size":541163520,"sha256":"40907b227632199b04c476768786f29ca9c562076a4b420dfeeba3097d9090df"}},
-    {"id":"gyeongnam","name":"경남","south":34.55,"west":127.55,"north":35.95,"east":129.25,"available":true,"mapFile":"gyeongnam.pmtiles","size":46478636,"sha256":"c9bec54714c4c4ea5a4f97633a842d1be25ab35dd55659e0b2e1a86fa7f539e6","routing":{"file":"gyeongnam.routing.v3.sqlite","size":393834496,"sha256":"c2777c10d7acde635987190812b8ca5a6e7a2eb6f9a28ed2961e6066425ef05e"}},
-    {"id":"jeju","name":"제주","south":33.05,"west":126.05,"north":33.62,"east":126.98,"available":true,"mapFile":"jeju.pmtiles","size":5607543,"sha256":"328b385a3949943688f6d1d6bfcb5e0974c178b0e8435aebf9dc2924595249e0","routing":{"file":"jeju.routing.v3.sqlite","size":50511872,"sha256":"373be049fa42988f9013dcd4e84e9ca044ed3c7ee88a23c4a980565a9c797eb3"}}
+    {
+      "id": "seoul",
+      "name": "서울",
+      "south": 37.41,
+      "west": 126.76,
+      "north": 37.72,
+      "east": 127.2,
+      "available": true,
+      "mapFile": "seoul.pmtiles",
+      "size": 22348913,
+      "sha256": "66f1f4597237c6097595c96dac46744b970c65163f6b76477a8386a78c66aa5e",
+      "routing": {
+        "file": "seoul.routing.v7.sqlite",
+        "size": 140029952,
+        "sha256": "0b54e3a0654eedfa1f4f505630877756c84b87bfa511285280956b7dac7f67a0"
+      }
+    },
+    {
+      "id": "busan",
+      "name": "부산",
+      "south": 34.95,
+      "west": 128.75,
+      "north": 35.39,
+      "east": 129.32,
+      "available": true,
+      "mapFile": "busan.pmtiles",
+      "size": 7972484,
+      "sha256": "1561b6155823100b051089c8d2bae8cc6a9da1742c1dc8d6c9d690a8250b4611",
+      "routing": {
+        "file": "busan.routing.v7.sqlite",
+        "size": 61861888,
+        "sha256": "e7bea7190d2a80f7119bc1b63662c1ce8f98d5cc45d87c45a8bccf0bd7a1a84f"
+      }
+    },
+    {
+      "id": "daegu",
+      "name": "대구",
+      "south": 35.55,
+      "west": 128.35,
+      "north": 36.02,
+      "east": 129.02,
+      "available": true,
+      "mapFile": "daegu.pmtiles",
+      "size": 8635279,
+      "sha256": "4297bc02ba14059374114c1db3731009d7062bd60883e02bc71d1225772f199c",
+      "routing": {
+        "file": "daegu.routing.v7.sqlite",
+        "size": 77131776,
+        "sha256": "3a5981bbaea0ef23a7c78ac2d95828078aff2c008a3f510302d7dc7d066d2ad6"
+      }
+    },
+    {
+      "id": "incheon",
+      "name": "인천",
+      "south": 37.3,
+      "west": 126.2,
+      "north": 37.72,
+      "east": 126.82,
+      "available": true,
+      "mapFile": "incheon.pmtiles",
+      "size": 12250987,
+      "sha256": "d6128f56e230549321af453ec89c192072c236756781c3eaefb279231ccc60aa",
+      "routing": {
+        "file": "incheon.routing.v7.sqlite",
+        "size": 90259456,
+        "sha256": "7959d8380d3e8733cffe5cbab1ec92a83813237b1f42a6a6f2e2f8c4c10e8435"
+      }
+    },
+    {
+      "id": "gwangju",
+      "name": "광주",
+      "south": 35.0,
+      "west": 126.64,
+      "north": 35.3,
+      "east": 127.02,
+      "available": true,
+      "mapFile": "gwangju.pmtiles",
+      "size": 6956286,
+      "sha256": "dbd651036cd8c95912f5d01bde5cd485981e17134547b55782a1488c18f2f309",
+      "routing": {
+        "file": "gwangju.routing.v7.sqlite",
+        "size": 60956672,
+        "sha256": "874a568aa6be240e1bff1e827aea22097b33501f1d020a16862e4146dbc2293b"
+      }
+    },
+    {
+      "id": "daejeon",
+      "name": "대전",
+      "south": 36.17,
+      "west": 127.18,
+      "north": 36.5,
+      "east": 127.56,
+      "available": true,
+      "mapFile": "daejeon.pmtiles",
+      "size": 5968683,
+      "sha256": "2906c3b281f4d36a78174be4bb51fffea87a233a6a82854e7223d175fdbb8eb6",
+      "routing": {
+        "file": "daejeon.routing.v7.sqlite",
+        "size": 55549952,
+        "sha256": "074327a72aaf4e98cf0be59da1dba35156e3d1c9ab0d56b996050d2df29f3e88"
+      }
+    },
+    {
+      "id": "ulsan",
+      "name": "울산",
+      "south": 35.3,
+      "west": 129.0,
+      "north": 35.73,
+      "east": 129.49,
+      "available": true,
+      "mapFile": "ulsan.pmtiles",
+      "size": 5976477,
+      "sha256": "ba2f7c7439f73374ce09b0509a941a238469c5332b2ad0c3f74f5c9a42ac7b5a",
+      "routing": {
+        "file": "ulsan.routing.v7.sqlite",
+        "size": 57552896,
+        "sha256": "f4aea3b9249a38db7e3b60cecc4ced5f2f8a9347a4f09b856642acc0dfde8ad5"
+      }
+    },
+    {
+      "id": "sejong",
+      "name": "세종",
+      "south": 36.42,
+      "west": 127.12,
+      "north": 36.73,
+      "east": 127.38,
+      "available": true,
+      "mapFile": "sejong.pmtiles",
+      "size": 3980268,
+      "sha256": "c2e4c66c54c4326f7621933e80b98497a7fc79bafe47dcf375fac81ef5e96776",
+      "routing": {
+        "file": "sejong.routing.v7.sqlite",
+        "size": 35913728,
+        "sha256": "5dabe32d7ca8c53e9e806380067efc326e7df94dceee6e2b48d91cb4eb425098"
+      }
+    },
+    {
+      "id": "gyeonggi",
+      "name": "경기",
+      "south": 36.88,
+      "west": 126.36,
+      "north": 38.3,
+      "east": 127.86,
+      "available": true,
+      "mapFile": "gyeonggi.pmtiles",
+      "size": 77264015,
+      "sha256": "85056360d067671232394b675d4c00e0c3bc31117e6ca5ca5d8bda8c07dd01a6",
+      "routing": {
+        "file": "gyeonggi.routing.v7.sqlite",
+        "size": 600637440,
+        "sha256": "ab2340eb40c65eb0036a9667d41e539a181eb9e6a23115275e449abbee5f6ade"
+      }
+    },
+    {
+      "id": "gangwon",
+      "name": "강원",
+      "south": 37.02,
+      "west": 127.05,
+      "north": 38.62,
+      "east": 129.37,
+      "available": true,
+      "mapFile": "gangwon.pmtiles",
+      "size": 52569329,
+      "sha256": "089f7d5bae512d45a29d6477d5eac6af8a8d9cd16b4e95632df5012e6169cf23",
+      "routing": {
+        "file": "gangwon.routing.v7.sqlite",
+        "size": 462663680,
+        "sha256": "22db62fae7a72fea0202c10f6a6e7da7eb432f68c3f72c5d7a255d2828d59039"
+      }
+    },
+    {
+      "id": "chungbuk",
+      "name": "충북",
+      "south": 36.0,
+      "west": 127.25,
+      "north": 37.25,
+      "east": 128.65,
+      "available": true,
+      "mapFile": "chungbuk.pmtiles",
+      "size": 38130028,
+      "sha256": "f73a638ad9414834fe24144d3339ea3ff0d303f94d9ba5fc491535afe900becc",
+      "routing": {
+        "file": "chungbuk.routing.v7.sqlite",
+        "size": 389574656,
+        "sha256": "2788d1eb65f6fde89b2758077d264d03f4aa941ef7807070a97d88842ab5ce09"
+      }
+    },
+    {
+      "id": "chungnam",
+      "name": "충남",
+      "south": 35.95,
+      "west": 125.95,
+      "north": 37.1,
+      "east": 127.65,
+      "available": true,
+      "mapFile": "chungnam.pmtiles",
+      "size": 43607860,
+      "sha256": "056231f0edfc489ea33ebd81d3b91608ba05c4d2aaddd5a1e30725a2938d28f7",
+      "routing": {
+        "file": "chungnam.routing.v7.sqlite",
+        "size": 442368000,
+        "sha256": "e6137fefd877db37d8a538eca656b34f7b18be401c8080d5a2e066472d67d511"
+      }
+    },
+    {
+      "id": "jeonbuk",
+      "name": "전북",
+      "south": 35.28,
+      "west": 126.3,
+      "north": 36.18,
+      "east": 127.88,
+      "available": true,
+      "mapFile": "jeonbuk.pmtiles",
+      "size": 31424813,
+      "sha256": "db63539bc8c696cad991e2f496b39d709e7953dafb50abc2117af8c064631f7f",
+      "routing": {
+        "file": "jeonbuk.routing.v7.sqlite",
+        "size": 281448448,
+        "sha256": "cba88731dfb096b0ddb9a3dd10e32fae40bf38725e2e899351267dc1f5f7acaf"
+      }
+    },
+    {
+      "id": "jeonnam",
+      "name": "전남",
+      "south": 33.9,
+      "west": 125.85,
+      "north": 35.5,
+      "east": 127.88,
+      "available": true,
+      "mapFile": "jeonnam.pmtiles",
+      "size": 40206698,
+      "sha256": "dc74617fee16af2a292758d7884bffc73dba8169d8c9bbb339d309f5add22903",
+      "routing": {
+        "file": "jeonnam.routing.v7.sqlite",
+        "size": 435548160,
+        "sha256": "a04310987571a8ae37bba3095b3dffc58069f9ce6d9cf436a108c14d4051c62c"
+      }
+    },
+    {
+      "id": "gyeongbuk",
+      "name": "경북",
+      "south": 35.55,
+      "west": 127.8,
+      "north": 37.58,
+      "east": 130.95,
+      "available": true,
+      "mapFile": "gyeongbuk.pmtiles",
+      "size": 57016219,
+      "sha256": "ea574bf50dbf4fd63b84afac1c757a093b389dab44134d1e28dcd2c54adfec29",
+      "routing": {
+        "file": "gyeongbuk.routing.v7.sqlite",
+        "size": 595570688,
+        "sha256": "1bde45409e94027117362234fe592a3e74a012b485ede8227d64e0eaea83ec9e"
+      }
+    },
+    {
+      "id": "gyeongnam",
+      "name": "경남",
+      "south": 34.55,
+      "west": 127.55,
+      "north": 35.95,
+      "east": 129.25,
+      "available": true,
+      "mapFile": "gyeongnam.pmtiles",
+      "size": 46478636,
+      "sha256": "c9bec54714c4c4ea5a4f97633a842d1be25ab35dd55659e0b2e1a86fa7f539e6",
+      "routing": {
+        "file": "gyeongnam.routing.v7.sqlite",
+        "size": 431046656,
+        "sha256": "eccb20947bb5e14737854e95d76688e338f14361262c0010add16c92a95ab311"
+      }
+    },
+    {
+      "id": "jeju",
+      "name": "제주",
+      "south": 33.05,
+      "west": 126.05,
+      "north": 33.62,
+      "east": 126.98,
+      "available": true,
+      "mapFile": "jeju.pmtiles",
+      "size": 5607543,
+      "sha256": "328b385a3949943688f6d1d6bfcb5e0974c178b0e8435aebf9dc2924595249e0",
+      "routing": {
+        "file": "jeju.routing.v7.sqlite",
+        "size": 61644800,
+        "sha256": "71e5261ad1b3b67acbcc9a7302d8b726cf8518774512bd5cff44d52aa22ac4e4"
+      }
+    }
   ]
 }
