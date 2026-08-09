@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "release": "v0.1.0-routing7-national",
-  "generatedAt": "2026-08-09T14:45:57+09:00",
+  "release": "v0.1.0-search-v2",
+  "generatedAt": "2026-08-09T15:34:01+09:00",
   "baseURL": "https://github.com/suhyeonii/islo-offline-maps/releases/download/v0.1.0",
   "nationwideRouting": {
     "file": "korea.routing.v7.sqlite",
@@ -10,89 +10,89 @@
   },
   "searchIndexes": {
     "seoul": {
-      "file": "seoul.places.v1.sqlite",
-      "size": 38387712,
-      "sha256": "dd948b3c5ff86fb9d4714d97d1640c02f1329bb2c4fd220e611690077267b025"
+      "file": "seoul.places.v2.sqlite",
+      "size": 42520576,
+      "sha256": "c1afef6fef44840cbcaa47af6c3f063cadfd2b4c14dec8aa5b703b4c24b27a0e"
     },
     "busan": {
-      "file": "busan.places.v1.sqlite",
-      "size": 4009984,
-      "sha256": "5c47d1850ec5833433617f731a3906df26e2b10435be9b127092891c668f99ba"
+      "file": "busan.places.v2.sqlite",
+      "size": 5087232,
+      "sha256": "a68df6266978e10c277bd0616fa7cac953d26b2ff617698753b0048eea424d0a"
     },
     "daegu": {
-      "file": "daegu.places.v1.sqlite",
-      "size": 2420736,
-      "sha256": "00ac65fc05426f2ac6abcb52b3aeab09134f8a17fd61b2e9153ee29b86496cc2"
+      "file": "daegu.places.v2.sqlite",
+      "size": 3194880,
+      "sha256": "ecad9136f9c19afb6b988e84d9759a7bc75318dbfda8ff710ed7970b9f5ae182"
     },
     "incheon": {
-      "file": "incheon.places.v1.sqlite",
-      "size": 7565312,
-      "sha256": "09a1d11e1af0f2e907bf09179179c3fe2a0fe267754748322488c2315b447850"
+      "file": "incheon.places.v2.sqlite",
+      "size": 8904704,
+      "sha256": "73086533ca0f0bf5211105def9fabb7ce540b54234f09f79045b71ef6b4fabef"
     },
     "gwangju": {
-      "file": "gwangju.places.v1.sqlite",
-      "size": 2928640,
-      "sha256": "6ba59d1ead9a204f343f86da3bb31fd7c3ca624b6be27165999cbd002fde711e"
+      "file": "gwangju.places.v2.sqlite",
+      "size": 4157440,
+      "sha256": "1900f3c81b28469e7a48753682d9d80f40f9eec8969bdb965ea1b209e3c79da6"
     },
     "daejeon": {
-      "file": "daejeon.places.v1.sqlite",
-      "size": 2265088,
-      "sha256": "72854ca478a59f8eaaa14a6bd6645702c7288f5419ed08bc325207b5d57d42b5"
+      "file": "daejeon.places.v2.sqlite",
+      "size": 2981888,
+      "sha256": "6e96b0a0f2ccede26c64eba6d4ff54363469ce8c9d531df97e8a26f19b85a6a0"
     },
     "ulsan": {
-      "file": "ulsan.places.v1.sqlite",
-      "size": 2138112,
-      "sha256": "af3c248acce7c399e77bec483b8a4af84b0faa1ab414fa0a31e8902c95214d58"
+      "file": "ulsan.places.v2.sqlite",
+      "size": 2756608,
+      "sha256": "95f62ca8f1c8ec8dc9289ba99772649ee7526bc1b8a7370c9175883338848433"
     },
     "sejong": {
-      "file": "sejong.places.v1.sqlite",
-      "size": 1196032,
-      "sha256": "314768d7b835d45477ca436b8d7d8c566daa7bf50352f6cd34a3537a0e2ef8c2"
+      "file": "sejong.places.v2.sqlite",
+      "size": 1527808,
+      "sha256": "ec83712af9f628e64d1521402bc5b08bad17b0e90c440264f1666ee6dc77a113"
     },
     "gyeonggi": {
-      "file": "gyeonggi.places.v1.sqlite",
-      "size": 59805696,
-      "sha256": "4c402745033e5326189625e14c93be096b6446c110ca0fc933a3843ce39f86cb"
+      "file": "gyeonggi.places.v2.sqlite",
+      "size": 68280320,
+      "sha256": "284b19ffdb55089d47d3a7814bd50ba7772c501866642f1429c82125320782de"
     },
     "gangwon": {
-      "file": "gangwon.places.v1.sqlite",
-      "size": 24297472,
-      "sha256": "05d25f2ad3fef45f925125b79f2b6cb34e8c0ed18d66a32716e57d5590fa51d3"
+      "file": "gangwon.places.v2.sqlite",
+      "size": 28106752,
+      "sha256": "7d241101503aafcc084c37ebed04928cbcd54df09c87f3a03b3422fcb677c180"
     },
     "chungbuk": {
-      "file": "chungbuk.places.v1.sqlite",
-      "size": 7200768,
-      "sha256": "8a95347354cfd066764372f3c41f0ad9f1f90b49e552cf67562158e3253d13b4"
+      "file": "chungbuk.places.v2.sqlite",
+      "size": 9424896,
+      "sha256": "f10947809f3bd6a7f7030ad659eba278c375e154afa3180434551c90aa168327"
     },
     "chungnam": {
-      "file": "chungnam.places.v1.sqlite",
-      "size": 10088448,
-      "sha256": "ae4b4410925152c75b97293d299873719352cce865e1c6a7050dd19046b2a47d"
+      "file": "chungnam.places.v2.sqlite",
+      "size": 13008896,
+      "sha256": "99968b78bf8b42c04a7e2de6a67fafb51b1efcdfbec878c0b81e8b644ade074d"
     },
     "jeonbuk": {
-      "file": "jeonbuk.places.v1.sqlite",
-      "size": 4091904,
-      "sha256": "f7d8299a415c5783088b52d93b3bca65e6d1dd8e3a702c62643c1f9b5adf4101"
+      "file": "jeonbuk.places.v2.sqlite",
+      "size": 5468160,
+      "sha256": "84e8c177be0ea67872917f38bde670bac7222c639de2db6eeda8c547ced10eb9"
     },
     "jeonnam": {
-      "file": "jeonnam.places.v1.sqlite",
-      "size": 8679424,
-      "sha256": "2d95777b4ff83283f7ce7a702961e84f1486078cec84048f5060474590918675"
+      "file": "jeonnam.places.v2.sqlite",
+      "size": 11104256,
+      "sha256": "5eb32ad1136e888fefedff216642140cafabd5c056645d619fffef1fa8969a4e"
     },
     "gyeongbuk": {
-      "file": "gyeongbuk.places.v1.sqlite",
-      "size": 10248192,
-      "sha256": "d48c3295264f85b5612e8e288be7a07c088652cccea6569c7818c0b6ff181399"
+      "file": "gyeongbuk.places.v2.sqlite",
+      "size": 13377536,
+      "sha256": "ffc60e2d30817b67a9fe41b159e5194a4fa2ab1ccc17db224ecb7ec81738588b"
     },
     "gyeongnam": {
-      "file": "gyeongnam.places.v1.sqlite",
-      "size": 13549568,
-      "sha256": "7d2ffa65428f798580e9b025570a92c2340b37d1c7db58cc2698f2cb8c3643f7"
+      "file": "gyeongnam.places.v2.sqlite",
+      "size": 17215488,
+      "sha256": "48864770ee104d844af583a2bb4ea8c02f52eed8365b244df928b6fbcf70c0bc"
     },
     "jeju": {
-      "file": "jeju.places.v1.sqlite",
-      "size": 3026944,
-      "sha256": "c6e1ba19e77561cd747063e0fbf14ad14c6945d6da26671c851fa1cdfd425246"
+      "file": "jeju.places.v2.sqlite",
+      "size": 3751936,
+      "sha256": "8f6a96ce46c1b77aa4d4cee046a9180770200a9a2e234d5f599ce29b0821f1b6"
     }
   },
   "regions": [

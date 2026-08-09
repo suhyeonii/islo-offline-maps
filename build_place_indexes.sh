@@ -20,7 +20,7 @@ for entry in "${regions[@]}"; do
   filtered="build/${id}.places.filtered.osm.pbf"
   osmium extract --overwrite --strategy complete_ways --bbox "$bbox" -o "$extracted" "$source_pbf"
   osmium tags-filter --overwrite "$extracted" nwr/name -o "$filtered"
-  rm -f "build/${id}.places.v1.sqlite"
-  osmium cat "$filtered" -f opl | python3 ./build_place_index.py "build/${id}.places.v1.sqlite"
+  rm -f "build/${id}.places.v2.sqlite"
+  osmium cat "$filtered" -f opl | python3 ./build_place_index.py "build/${id}.places.v2.sqlite"
   rm -f "$extracted" "$filtered"
 done

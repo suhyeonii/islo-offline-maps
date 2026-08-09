@@ -54,26 +54,32 @@ for line in sys.stdin:
             sum(point[0] for point in points) / len(points),
             sum(point[1] for point in points) / len(points),
         )
-    name = item_tags.get("name") or item_tags.get("name:ko")
+    name = item_tags.get("name") or item_tags.get("name:ko") or item_tags.get("name:en")
     if not name or not accepted.intersection(item_tags):
         continue
     address = " ".join(filter(None, [item_tags.get("addr:city"), item_tags.get("addr:district"),
                                       item_tags.get("addr:street"), item_tags.get("addr:housenumber")]))
     category = next((item_tags[key] for key in accepted if key in item_tags), "장소")
     places.append({
-        "id": f"{line[0]}{osm_id}", "name": name, "subtitle": address or category,
+        "id": f"{line[0]}{osm_id}", "name": name,
+        "name_ko": item_tags.get("name:ko", ""),
+        "name_en": item_tags.get("name:en", ""),
+        "subtitle": address or category,
         "latitude": coordinate[0], "longitude": coordinate[1],
-        "searchTerms": " ".join(filter(None, [name, address, category, item_tags.get("brand")]))
+        "searchTerms": " ".join(filter(None, [
+            name, item_tags.get("name:ko"), item_tags.get("name:en"),
+            address, category, item_tags.get("brand")
+        ]))
     })
 
 database = sqlite3.connect(args.output)
 database.execute("DROP TABLE IF EXISTS places")
-database.execute("CREATE VIRTUAL TABLE places USING fts5(id UNINDEXED,name,subtitle,"
+database.execute("CREATE VIRTUAL TABLE places USING fts5(id UNINDEXED,name,name_ko,name_en,subtitle,"
                  "latitude UNINDEXED,longitude UNINDEXED,searchTerms,tokenize='unicode61')")
 database.executemany(
-    "INSERT INTO places(id,name,subtitle,latitude,longitude,searchTerms) VALUES(?,?,?,?,?,?)",
-    [(item["id"], item["name"], item["subtitle"], item["latitude"], item["longitude"],
-      item["searchTerms"]) for item in places]
+    "INSERT INTO places(id,name,name_ko,name_en,subtitle,latitude,longitude,searchTerms) VALUES(?,?,?,?,?,?,?,?)",
+    [(item["id"], item["name"], item["name_ko"], item["name_en"], item["subtitle"],
+      item["latitude"], item["longitude"], item["searchTerms"]) for item in places]
 )
 database.commit()
 database.execute("VACUUM")
