@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "release": "v0.1.0-routing5",
+  "release": "v0.1.0-routing7",
   "generatedAt": "2026-08-09T00:12:00+09:00",
   "baseURL": "https://github.com/suhyeonii/islo-offline-maps/releases/download/v0.1.0",
   "nationwideRouting": {"file":"korea.routing.v3.sqlite","size":289947648,"sha256":"2bc1afb4f2b954588a5f3f3b90fa547e0a490217e858f7482bf84016bae5c45a"},
@@ -24,7 +24,7 @@
     "jeju":{"file":"jeju.places.v1.sqlite","size":3026944,"sha256":"c6e1ba19e77561cd747063e0fbf14ad14c6945d6da26671c851fa1cdfd425246"}
   },
   "regions": [
-    {"id":"seoul","name":"서울","south":37.41,"west":126.76,"north":37.72,"east":127.20,"available":true,"mapFile":"seoul.pmtiles","size":22348913,"sha256":"66f1f4597237c6097595c96dac46744b970c65163f6b76477a8386a78c66aa5e","routing":{"file":"seoul.routing.v5.sqlite","size":138047488,"sha256":"20cb374c18a115751d54714ba433e773d2c96eb990d2b4c7ede30b4b021fc283"}},
+    {"id":"seoul","name":"서울","south":37.41,"west":126.76,"north":37.72,"east":127.20,"available":true,"mapFile":"seoul.pmtiles","size":22348913,"sha256":"66f1f4597237c6097595c96dac46744b970c65163f6b76477a8386a78c66aa5e","routing":{"file":"seoul.routing.v7.sqlite","size":140029952,"sha256":"0b54e3a0654eedfa1f4f505630877756c84b87bfa511285280956b7dac7f67a0"}},
     {"id":"busan","name":"부산","south":34.95,"west":128.75,"north":35.39,"east":129.32,"available":true,"mapFile":"busan.pmtiles","size":7972484,"sha256":"1561b6155823100b051089c8d2bae8cc6a9da1742c1dc8d6c9d690a8250b4611","routing":{"file":"busan.routing.v3.sqlite","size":56070144,"sha256":"75719e71343cc883e7be7e5b389d504dcdb7dad050492aa62157304479e7aa6d"}},
     {"id":"daegu","name":"대구","south":35.55,"west":128.35,"north":36.02,"east":129.02,"available":true,"mapFile":"daegu.pmtiles","size":8635279,"sha256":"4297bc02ba14059374114c1db3731009d7062bd60883e02bc71d1225772f199c","routing":{"file":"daegu.routing.v3.sqlite","size":73981952,"sha256":"be31dda301e899e2a4a7bd129e7b5e305a301288b0bf01bc1b01355b1e717692"}},
     {"id":"incheon","name":"인천","south":37.30,"west":126.20,"north":37.72,"east":126.82,"available":true,"mapFile":"incheon.pmtiles","size":12250987,"sha256":"d6128f56e230549321af453ec89c192072c236756781c3eaefb279231ccc60aa","routing":{"file":"incheon.routing.v3.sqlite","size":64577536,"sha256":"729d84aa71b79530721f32de62038ee35a6da33121c44f88301b804af8ba885d"}},

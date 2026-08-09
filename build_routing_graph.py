@@ -47,10 +47,20 @@ def bicycle_profile(values: dict[str, str], compact: bool) -> tuple[float, int] 
     access = values.get("access", "")
     vehicle = values.get("vehicle", "")
     bicycle_allowed = bicycle in ALLOWED_BICYCLE
+    forced_dismount_bridge = (
+        bicycle == "no"
+        and values.get("bridge") == "yes"
+        and highway in {"primary", "secondary", "tertiary"}
+    )
+    pedestrian_connector = (
+        values.get("foot") in ALLOWED_BICYCLE
+        and highway in {"footway", "path", "service"}
+        and bicycle not in FORBIDDEN_ACCESS
+    )
     if (
-        bicycle in FORBIDDEN_ACCESS
-        or (access in FORBIDDEN_ACCESS and not bicycle_allowed)
-        or (vehicle in FORBIDDEN_ACCESS and not bicycle_allowed)
+        (bicycle in FORBIDDEN_ACCESS and not forced_dismount_bridge)
+        or (access in FORBIDDEN_ACCESS and not bicycle_allowed and not pedestrian_connector)
+        or (vehicle in FORBIDDEN_ACCESS and not bicycle_allowed and not pedestrian_connector)
         or highway in {"motorway", "motorway_link", "steps"}
     ):
         return None
@@ -68,6 +78,11 @@ def bicycle_profile(values: dict[str, str], compact: bool) -> tuple[float, int] 
         if values.get("sac_scale") or values.get("surface", "") in UNSUITABLE_CITY_BICYCLE_SURFACES:
             return None
         return (3.8, 0)
+    if forced_dismount_bridge:
+        # Do not ever treat a bicycle-prohibited bridge as a riding route. It is
+        # retained solely as a costly push-bike fallback when it is the only
+        # mapped way to an otherwise isolated public destination.
+        return (8.0, 0)
     if highway == "path":
         surface = values.get("surface", "")
         is_hiking_path = (
@@ -123,6 +138,11 @@ def bicycle_profile(values: dict[str, str], compact: bool) -> tuple[float, int] 
     # normal rideable road or a mapped cycleway.
     if bicycle == "dismount":
         base = max(base, 2.4)
+    # `access=no, foot=yes` is common on public park approaches and pedestrian
+    # bridges: cars are prohibited, not people. It is valid only as a short
+    # push-bike connector and must never compete with a rideable road.
+    if pedestrian_connector and not bicycle_allowed:
+        base = max(base, 4.2)
     return base, int(dedicated)
 
 
@@ -182,6 +202,7 @@ def main() -> None:
       CREATE TABLE edges(src INTEGER NOT NULL, dst INTEGER NOT NULL,
                          meters REAL NOT NULL, cost REAL NOT NULL,
                          is_cycleway INTEGER NOT NULL DEFAULT 0,
+                         is_dismount INTEGER NOT NULL DEFAULT 0,
                          PRIMARY KEY(src, dst)) WITHOUT ROWID;
       CREATE TABLE amenities(node_id INTEGER PRIMARY KEY, kind TEXT NOT NULL,
                              name TEXT, lat REAL NOT NULL, lon REAL NOT NULL);
@@ -193,7 +214,7 @@ def main() -> None:
     database.execute("INSERT INTO metadata VALUES('schemaVersion','2')")
     database.execute("INSERT INTO metadata VALUES('kind',?)", ("compact" if args.compact else "detail",))
     pending_nodes: list[tuple[int, float, float]] = []
-    pending_edges: list[tuple[int, int, float, float, int]] = []
+    pending_edges: list[tuple[int, int, float, float, int, int]] = []
     pending_amenities: list[tuple[int, str, str | None, float, float]] = []
     did_flush_nodes = False
 
@@ -239,6 +260,19 @@ def main() -> None:
             if profile is None:
                 continue
             weight, is_cycleway = profile
+            is_dismount = int(
+                values.get("bicycle") == "dismount"
+                or (
+                    values.get("bicycle") == "no"
+                    and values.get("bridge") == "yes"
+                    and values.get("highway") in {"primary", "secondary", "tertiary"}
+                )
+                or (
+                    values.get("foot") in ALLOWED_BICYCLE
+                    and values.get("highway") in {"footway", "path", "service"}
+                    and values.get("bicycle") not in FORBIDDEN_ACCESS
+                )
+            )
             refs = [int(value.lstrip("n")) for value in match.group(2).split(",")]
             placeholders = ",".join("?" for _ in refs)
             way_coordinates = {
@@ -266,16 +300,16 @@ def main() -> None:
                 if reverse:
                     edge_source, edge_destination = destination, source
                 pending_edges.append(
-                    (edge_source, edge_destination, meters, meters * weight, is_cycleway)
+                    (edge_source, edge_destination, meters, meters * weight, is_cycleway, is_dismount)
                 )
                 if not oneway and not reverse:
-                    pending_edges.append((destination, source, meters, meters * weight, is_cycleway))
+                    pending_edges.append((destination, source, meters, meters * weight, is_cycleway, is_dismount))
                 if len(pending_edges) >= 100_000:
-                    database.executemany("INSERT OR REPLACE INTO edges VALUES(?,?,?,?,?)", pending_edges)
+                    database.executemany("INSERT OR REPLACE INTO edges VALUES(?,?,?,?,?,?)", pending_edges)
                     pending_edges.clear()
 
     database.executemany("INSERT OR IGNORE INTO nodes VALUES(?,?,?)", pending_nodes)
-    database.executemany("INSERT OR REPLACE INTO edges VALUES(?,?,?,?,?)", pending_edges)
+    database.executemany("INSERT OR REPLACE INTO edges VALUES(?,?,?,?,?,?)", pending_edges)
     database.executemany("INSERT OR REPLACE INTO amenities VALUES(?,?,?,?,?)", pending_amenities)
     database.executescript("""
       CREATE INDEX nodes_lat ON nodes(lat);
