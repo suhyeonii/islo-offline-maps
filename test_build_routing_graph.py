@@ -63,15 +63,25 @@ class BicycleProfileTests(unittest.TestCase):
         )
         self.assertGreaterEqual(profile[0], 2.4)
 
-    def test_public_pedestrian_and_unknown_surface_paths_are_walkable(self):
+    def test_public_pedestrian_is_walkable_but_unknown_path_is_not(self):
         pedestrian = bicycle_profile({"highway": "pedestrian"}, False)
         unknown_path = bicycle_profile({"highway": "path"}, False)
+        paved_path = bicycle_profile({"highway": "path", "surface": "asphalt"}, False)
         prohibited_riding = bicycle_profile(
             {"highway": "footway", "bicycle": "no", "foot": "yes"}, False
         )
         self.assertGreaterEqual(pedestrian[0], 3.8)
-        self.assertGreaterEqual(unknown_path[0], 4.2)
+        self.assertIsNone(unknown_path)
+        self.assertGreaterEqual(paved_path[0], 4.2)
         self.assertGreaterEqual(prohibited_riding[0], 3.8)
+
+    def test_rejects_trail_metadata_even_when_surface_is_missing(self):
+        self.assertIsNone(bicycle_profile(
+            {"highway": "path", "trail_visibility": "good"}, False
+        ))
+        self.assertIsNone(bicycle_profile(
+            {"highway": "path", "mtb:scale": "1"}, False
+        ))
 
 
 if __name__ == "__main__":

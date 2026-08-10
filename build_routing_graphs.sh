@@ -2,7 +2,7 @@
 set -euo pipefail
 
 source_pbf="build/south-korea-latest.osm.pbf"
-version="${ROUTING_VERSION:-v8}"
+version="${ROUTING_VERSION:-v9}"
 build_graph() {
   local id="$1"
   local bbox="$2"

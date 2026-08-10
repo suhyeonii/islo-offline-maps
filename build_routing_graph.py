@@ -95,12 +95,23 @@ def bicycle_profile(values: dict[str, str], compact: bool) -> tuple[float, int] 
     if highway == "path":
         is_hiking_path = (
             bool(values.get("sac_scale"))
+            or bool(values.get("trail_visibility"))
+            or bool(values.get("mtb:scale"))
+            or values.get("informal") == "yes"
             or surface in UNSUITABLE_CITY_BICYCLE_SURFACES
         )
         # Generic OSM `path` includes everything from paved shared-use trails to
         # steep mountain footpaths. Without an affirmative bicycle tag, only
         # surfaces suitable for ordinary city bicycles belong in this router.
         if not bicycle_allowed and is_hiking_path:
+            return None
+        # An untagged OSM `path` is not evidence of an urban, push-bike-safe
+        # connection. In Korea many mountain trails omit both `surface` and
+        # `sac_scale`; accepting those created routes through hills. Retain a
+        # generic path only when its surface affirmatively describes a city-bike
+        # suitable way. Ordinary `footway` remains available as the expensive
+        # last-metre dismount connector to parks and buildings.
+        if not bicycle_allowed and surface not in PAVED_SURFACES:
             return None
     cycleway = values.get("cycleway", "")
     cycleway_left = values.get("cycleway:left", "")
