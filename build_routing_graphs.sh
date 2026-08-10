@@ -2,7 +2,7 @@
 set -euo pipefail
 
 source_pbf="build/south-korea-latest.osm.pbf"
-version="${ROUTING_VERSION:-v7}"
+version="${ROUTING_VERSION:-v8}"
 build_graph() {
   local id="$1"
   local bbox="$2"
@@ -23,6 +23,7 @@ build_graph() {
     osmium tags-filter --overwrite "$source" \
       w/highway=cycleway w/highway=trunk w/highway=primary w/highway=secondary \
       w/highway=tertiary w/highway=service w/highway=footway w/highway=path \
+      w/highway=pedestrian \
       w/bicycle=designated w/bicycle=official \
       n/amenity=drinking_water n/amenity=toilets -o "$filtered"
     osmium cat "$filtered" -f opl | python3 ./build_routing_graph.py \

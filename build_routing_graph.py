@@ -47,18 +47,27 @@ def bicycle_profile(values: dict[str, str], compact: bool) -> tuple[float, int] 
     access = values.get("access", "")
     vehicle = values.get("vehicle", "")
     bicycle_allowed = bicycle in ALLOWED_BICYCLE
+    foot = values.get("foot", "")
+    surface = values.get("surface", "")
+    walkable_dismount = (
+        highway in {"footway", "pedestrian", "path"}
+        and foot not in FORBIDDEN_ACCESS
+        and access != "private"
+        and not values.get("sac_scale")
+        and surface not in UNSUITABLE_CITY_BICYCLE_SURFACES
+    )
     forced_dismount_bridge = (
         bicycle == "no"
         and values.get("bridge") == "yes"
         and highway in {"primary", "secondary", "tertiary"}
     )
-    pedestrian_connector = (
-        values.get("foot") in ALLOWED_BICYCLE
-        and highway in {"footway", "path", "service"}
-        and bicycle not in FORBIDDEN_ACCESS
+    pedestrian_connector = walkable_dismount or (
+        foot in ALLOWED_BICYCLE
+        and highway in {"footway", "pedestrian", "path", "service"}
+        and access != "private"
     )
     if (
-        (bicycle in FORBIDDEN_ACCESS and not forced_dismount_bridge)
+        (bicycle in FORBIDDEN_ACCESS and not forced_dismount_bridge and not walkable_dismount)
         or (access in FORBIDDEN_ACCESS and not bicycle_allowed and not pedestrian_connector)
         or (vehicle in FORBIDDEN_ACCESS and not bicycle_allowed and not pedestrian_connector)
         or highway in {"motorway", "motorway_link", "steps"}
@@ -66,7 +75,7 @@ def bicycle_profile(values: dict[str, str], compact: bool) -> tuple[float, int] 
         return None
     if values.get("route") == "ferry":
         return (1.8, 0) if bicycle_allowed else None
-    if highway == "footway":
+    if highway in {"footway", "pedestrian"}:
         # Most generic footways are sidewalks, so they must never become a normal
         # bicycle choice. Some parks, riverside entrances and public facilities,
         # however, connect a bicycle-permitted path to the only legal road access
@@ -75,7 +84,7 @@ def bicycle_profile(values: dict[str, str], compact: bool) -> tuple[float, int] 
         # unsuitable/mountain-like surfaces above.
         if bicycle in {"yes", "designated", "official"}:
             return (0.72 if bicycle == "yes" else 0.52, 1)
-        if values.get("sac_scale") or values.get("surface", "") in UNSUITABLE_CITY_BICYCLE_SURFACES:
+        if values.get("sac_scale") or surface in UNSUITABLE_CITY_BICYCLE_SURFACES:
             return None
         return (3.8, 0)
     if forced_dismount_bridge:
@@ -84,16 +93,14 @@ def bicycle_profile(values: dict[str, str], compact: bool) -> tuple[float, int] 
         # mapped way to an otherwise isolated public destination.
         return (8.0, 0)
     if highway == "path":
-        surface = values.get("surface", "")
         is_hiking_path = (
             bool(values.get("sac_scale"))
-            or values.get("foot") == "designated"
             or surface in UNSUITABLE_CITY_BICYCLE_SURFACES
         )
         # Generic OSM `path` includes everything from paved shared-use trails to
         # steep mountain footpaths. Without an affirmative bicycle tag, only
         # surfaces suitable for ordinary city bicycles belong in this router.
-        if not bicycle_allowed and (is_hiking_path or surface not in PAVED_SURFACES):
+        if not bicycle_allowed and is_hiking_path:
             return None
     cycleway = values.get("cycleway", "")
     cycleway_left = values.get("cycleway:left", "")
@@ -112,6 +119,7 @@ def bicycle_profile(values: dict[str, str], compact: bool) -> tuple[float, int] 
         return None
     base = {
         "cycleway": 0.42, "path": 0.55, "track": 0.65,
+        "pedestrian": 3.8,
         "living_street": 0.82, "residential": 0.9, "service": 1.0,
         "unclassified": 1.05, "tertiary": 1.2, "secondary": 1.65,
         "primary": 2.2, "trunk": 3.0,
@@ -123,7 +131,6 @@ def bicycle_profile(values: dict[str, str], compact: bool) -> tuple[float, int] 
     elif has_cycle_lane:
         base *= 0.78
 
-    surface = values.get("surface", "")
     smoothness = values.get("smoothness", "")
     if surface in {"cobblestone", "cobblestone:flattened", "gravel", "pebblestone"}:
         base *= 1.35
@@ -262,6 +269,10 @@ def main() -> None:
             weight, is_cycleway = profile
             is_dismount = int(
                 values.get("bicycle") == "dismount"
+                or (
+                    values.get("highway") in {"footway", "pedestrian", "path"}
+                    and values.get("bicycle") not in {"yes", "designated", "official"}
+                )
                 or (
                     values.get("bicycle") == "no"
                     and values.get("bridge") == "yes"

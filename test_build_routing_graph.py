@@ -63,6 +63,16 @@ class BicycleProfileTests(unittest.TestCase):
         )
         self.assertGreaterEqual(profile[0], 2.4)
 
+    def test_public_pedestrian_and_unknown_surface_paths_are_walkable(self):
+        pedestrian = bicycle_profile({"highway": "pedestrian"}, False)
+        unknown_path = bicycle_profile({"highway": "path"}, False)
+        prohibited_riding = bicycle_profile(
+            {"highway": "footway", "bicycle": "no", "foot": "yes"}, False
+        )
+        self.assertGreaterEqual(pedestrian[0], 3.8)
+        self.assertGreaterEqual(unknown_path[0], 4.2)
+        self.assertGreaterEqual(prohibited_riding[0], 3.8)
+
 
 if __name__ == "__main__":
     unittest.main()

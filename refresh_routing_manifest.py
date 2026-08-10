@@ -9,7 +9,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).parent
 BUILD = ROOT / "build"
-VERSION = "v7"
+VERSION = "v8"
 
 
 def asset(name: str) -> dict[str, object]:
