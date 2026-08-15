@@ -1,3 +1,5 @@
 .DS_Store
 build/
 *.osm.pbf
+__pycache__/
+dem/

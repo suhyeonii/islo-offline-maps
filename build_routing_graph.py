@@ -4,13 +4,122 @@
 import argparse
 import csv
 import math
+import os
 import re
 import sqlite3
+import struct
 import sys
-from urllib.parse import unquote
+import zipfile
 
 
 WAY_RE = re.compile(r"^w-?\d+ .* T(.*?) N(.*)$")
+
+
+class ElevationProvider:
+    """Provides elevation lookups from SRTM HGT or HGT.zip files."""
+
+    def __init__(self, dem_dir: str | None = None) -> None:
+        self.dem_dir = dem_dir
+        self._tiles: dict[str, bytes] = {}
+
+    @staticmethod
+    def tile_name(latitude: float, longitude: float) -> str:
+        lat_prefix = "N" if latitude >= 0 else "S"
+        lat_val = int(abs(math.floor(latitude)))
+        lon_prefix = "E" if longitude >= 0 else "W"
+        lon_val = int(abs(math.floor(longitude)))
+        return f"{lat_prefix}{lat_val:02d}{lon_prefix}{lon_val:03d}"
+
+    def _load_tile(self, name: str) -> bytes | None:
+        if name in self._tiles:
+            return self._tiles[name]
+        if not self.dem_dir or not os.path.isdir(self.dem_dir):
+            return None
+
+        # Check raw .hgt
+        raw_path = os.path.join(self.dem_dir, f"{name}.hgt")
+        if os.path.isfile(raw_path):
+            with open(raw_path, "rb") as f:
+                data = f.read()
+                self._tiles[name] = data
+                return data
+
+        # Check .hgt.zip or .SRTMGL1.hgt.zip
+        for ext in (f"{name}.hgt.zip", f"{name}.SRTMGL1.hgt.zip", f"{name}.SRTMGL3.hgt.zip"):
+            zip_path = os.path.join(self.dem_dir, ext)
+            if os.path.isfile(zip_path):
+                try:
+                    with zipfile.ZipFile(zip_path) as zf:
+                        for inner_name in zf.namelist():
+                            if inner_name.endswith(".hgt"):
+                                data = zf.read(inner_name)
+                                self._tiles[name] = data
+                                return data
+                except Exception:
+                    pass
+        return None
+
+    def get_elevation(self, latitude: float, longitude: float) -> int:
+        name = self.tile_name(latitude, longitude)
+        data = self._load_tile(name)
+        if not data:
+            return 0
+
+        # Determine dimensions (1201 for SRTM-3 or 3601 for SRTM-1)
+        size = len(data)
+        if size == 3601 * 3601 * 2:
+            dim = 3601
+        elif size == 1201 * 1201 * 2:
+            dim = 1201
+        else:
+            return 0
+
+        lat_floor = math.floor(latitude)
+        lon_floor = math.floor(longitude)
+        # Lat goes North to South (top to bottom)
+        y_float = (lat_floor + 1.0 - latitude) * (dim - 1)
+        x_float = (longitude - lon_floor) * (dim - 1)
+
+        x0 = int(math.floor(x_float))
+        y0 = int(math.floor(y_float))
+        x1 = min(dim - 1, x0 + 1)
+        y1 = min(dim - 1, y0 + 1)
+
+        dx = x_float - x0
+        dy = y_float - y0
+
+        def sample(x: int, y: int) -> int:
+            offset = (y * dim + x) * 2
+            if offset + 2 > size:
+                return 0
+            val = struct.unpack(">h", data[offset : offset + 2])[0]
+            # -32768 indicates void / nodata
+            return 0 if val <= -32768 else val
+
+        q11 = sample(x0, y0)
+        q21 = sample(x1, y0)
+        q12 = sample(x0, y1)
+        q22 = sample(x1, y1)
+
+        # Bilinear interpolation
+        top = q11 * (1.0 - dx) + q21 * dx
+        bottom = q12 * (1.0 - dx) + q22 * dx
+        ele = top * (1.0 - dy) + bottom * dy
+        return int(round(ele))
+
+
+def decode_opl(value: str) -> str:
+    """Decode osmium OPL's %UnicodeCodePoint% escaping.
+
+    OPL is not URL percent encoding: for example, Korean '아' is written as
+    ``%c544%`` rather than UTF-8's ``%EC%95%84``.  urllib.parse.unquote turns
+    that into the corrupt string '�44%', which was then persisted in amenities.
+    """
+    return re.sub(
+        r"%([0-9A-Fa-f]+)%",
+        lambda match: chr(int(match.group(1), 16)),
+        value,
+    )
 
 
 def tags(raw: str) -> dict[str, str]:
@@ -20,7 +129,7 @@ def tags(raw: str) -> dict[str, str]:
     for item in raw.split(","):
         key, separator, value = item.partition("=")
         if separator:
-            result[key] = unquote(value)
+            result[decode_opl(key)] = decode_opl(value)
     return result
 
 
@@ -182,7 +291,10 @@ def main() -> None:
     parser.add_argument("output")
     parser.add_argument("--compact", action="store_true")
     parser.add_argument("--official-csv")
+    parser.add_argument("--dem-dir", help="Directory containing SRTM .hgt / .hgt.zip files")
     args = parser.parse_args()
+
+    elevation_provider = ElevationProvider(args.dem_dir)
 
     route_names = {
         1: "아라자전거길", 2: "한강종주자전거길", 3: "남한강자전거길",
@@ -216,7 +328,8 @@ def main() -> None:
     database.executescript("""
       PRAGMA journal_mode=OFF; PRAGMA synchronous=OFF; PRAGMA temp_store=MEMORY;
       CREATE TABLE metadata(key TEXT PRIMARY KEY, value TEXT NOT NULL);
-      CREATE TABLE nodes(id INTEGER PRIMARY KEY, lat REAL NOT NULL, lon REAL NOT NULL);
+      CREATE TABLE nodes(id INTEGER PRIMARY KEY, lat REAL NOT NULL, lon REAL NOT NULL,
+                         ele INTEGER NOT NULL DEFAULT 0);
       CREATE TABLE edges(src INTEGER NOT NULL, dst INTEGER NOT NULL,
                          meters REAL NOT NULL, cost REAL NOT NULL,
                          is_cycleway INTEGER NOT NULL DEFAULT 0,
@@ -231,7 +344,7 @@ def main() -> None:
     """)
     database.execute("INSERT INTO metadata VALUES('schemaVersion','2')")
     database.execute("INSERT INTO metadata VALUES('kind',?)", ("compact" if args.compact else "detail",))
-    pending_nodes: list[tuple[int, float, float]] = []
+    pending_nodes: list[tuple[int, float, float, int]] = []
     pending_edges: list[tuple[int, int, float, float, int, int]] = []
     pending_amenities: list[tuple[int, str, str | None, float, float]] = []
     did_flush_nodes = False
@@ -260,13 +373,14 @@ def main() -> None:
                                 index, (float("inf"), 0)
                             )[0]:
                                 official_nearest[index] = (distance, node_id)
-                pending_nodes.append((node_id, lat, lon))
+                ele = elevation_provider.get_elevation(lat, lon)
+                pending_nodes.append((node_id, lat, lon, ele))
                 if len(pending_nodes) >= 50_000:
-                    database.executemany("INSERT OR IGNORE INTO nodes VALUES(?,?,?)", pending_nodes)
+                    database.executemany("INSERT OR IGNORE INTO nodes VALUES(?,?,?,?)", pending_nodes)
                     pending_nodes.clear()
         elif line.startswith("w"):
             if not did_flush_nodes:
-                database.executemany("INSERT OR IGNORE INTO nodes VALUES(?,?,?)", pending_nodes)
+                database.executemany("INSERT OR IGNORE INTO nodes VALUES(?,?,?,?)", pending_nodes)
                 pending_nodes.clear()
                 database.commit()
                 did_flush_nodes = True
@@ -330,7 +444,7 @@ def main() -> None:
                     database.executemany("INSERT OR REPLACE INTO edges VALUES(?,?,?,?,?,?)", pending_edges)
                     pending_edges.clear()
 
-    database.executemany("INSERT OR IGNORE INTO nodes VALUES(?,?,?)", pending_nodes)
+    database.executemany("INSERT OR IGNORE INTO nodes VALUES(?,?,?,?)", pending_nodes)
     database.executemany("INSERT OR REPLACE INTO edges VALUES(?,?,?,?,?,?)", pending_edges)
     database.executemany("INSERT OR REPLACE INTO amenities VALUES(?,?,?,?,?)", pending_amenities)
     database.executescript("""

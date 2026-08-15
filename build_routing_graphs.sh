@@ -2,7 +2,11 @@
 set -euo pipefail
 
 source_pbf="build/south-korea-latest.osm.pbf"
-version="${ROUTING_VERSION:-v9}"
+version="${ROUTING_VERSION:-v10}"
+dem_dir="${DEM_DIR:-dem}"
+dem_args=()
+[[ -d "$dem_dir" ]] && dem_args=(--dem-dir "$dem_dir")
+
 build_graph() {
   local id="$1"
   local bbox="$2"
@@ -27,12 +31,12 @@ build_graph() {
       w/bicycle=designated w/bicycle=official \
       n/amenity=drinking_water n/amenity=toilets -o "$filtered"
     osmium cat "$filtered" -f opl | python3 ./build_routing_graph.py \
-      --compact --official-csv ./official_cycle_routes.csv "$output"
+      --compact --official-csv ./official_cycle_routes.csv "${dem_args[@]}" "$output"
   else
     osmium tags-filter --overwrite "$source" w/highway \
       n/amenity=drinking_water n/amenity=toilets -o "$filtered"
     osmium cat "$filtered" -f opl | python3 ./build_routing_graph.py \
-      --official-csv ./official_cycle_routes.csv "$output"
+      --official-csv ./official_cycle_routes.csv "${dem_args[@]}" "$output"
   fi
   rm -f "$extracted" "$filtered"
 }

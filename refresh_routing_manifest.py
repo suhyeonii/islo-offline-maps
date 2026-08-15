@@ -9,7 +9,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).parent
 BUILD = ROOT / "build"
-VERSION = "v9"
+VERSION = "v10"
 
 
 def asset(name: str) -> dict[str, object]:
@@ -24,7 +24,7 @@ def asset(name: str) -> dict[str, object]:
 def main() -> None:
     manifest_path = ROOT / "manifest.json"
     manifest = json.loads(manifest_path.read_text())
-    manifest["release"] = "v0.1.0-routing8-safe-paths"
+    manifest["release"] = "v0.1.0-routing10-elevation"
     manifest["generatedAt"] = datetime.now(timezone(timedelta(hours=9))).replace(microsecond=0).isoformat()
     manifest["nationwideRouting"] = asset(f"korea.routing.{VERSION}.sqlite")
     for region in manifest["regions"]:

@@ -1,12 +1,12 @@
 {
   "schemaVersion": 2,
-  "release": "v0.1.0-routing8-safe-paths",
-  "generatedAt": "2026-08-10T16:42:33+09:00",
+  "release": "v0.1.0-routing10-elevation",
+  "generatedAt": "2026-08-15T12:32:09+09:00",
   "baseURL": "https://github.com/suhyeonii/islo-offline-maps/releases/download/v0.1.0",
   "nationwideRouting": {
-    "file": "korea.routing.v9.sqlite",
-    "size": 843096064,
-    "sha256": "770f3ad5ad711d59b2b6398429283c655ac8492720a14e721fe1f98afa300f84"
+    "file": "korea.routing.v10.sqlite",
+    "size": 866566144,
+    "sha256": "e4e4d9c291a6e07bde16d4d915c97189635fa2faa4e3e0f98ee7430899917ea1"
   },
   "searchIndexes": {
     "seoul": {
@@ -108,9 +108,9 @@
       "size": 22348913,
       "sha256": "66f1f4597237c6097595c96dac46744b970c65163f6b76477a8386a78c66aa5e",
       "routing": {
-        "file": "seoul.routing.v9.sqlite",
-        "size": 143196160,
-        "sha256": "7c086942e15619764eb1b82457b4bede56a2c61f3190e75c287e15726ca73003"
+        "file": "seoul.routing.v10.sqlite",
+        "size": 145211392,
+        "sha256": "9d3847d24a77b741340117761b662091480d1ff06764f362219243770845556c"
       }
     },
     {
@@ -125,9 +125,9 @@
       "size": 7972484,
       "sha256": "1561b6155823100b051089c8d2bae8cc6a9da1742c1dc8d6c9d690a8250b4611",
       "routing": {
-        "file": "busan.routing.v9.sqlite",
-        "size": 62701568,
-        "sha256": "7f490a8845fa62364a5dc15fdfe917da8d09e9ef66c95708e8b271a9a8207301"
+        "file": "busan.routing.v10.sqlite",
+        "size": 63815680,
+        "sha256": "adeb3850f4dd1a0ebe9bc681e30a545bd46f61ac38d849099eb154547ec1346f"
       }
     },
     {
@@ -142,9 +142,9 @@
       "size": 8635279,
       "sha256": "4297bc02ba14059374114c1db3731009d7062bd60883e02bc71d1225772f199c",
       "routing": {
-        "file": "daegu.routing.v9.sqlite",
-        "size": 77242368,
-        "sha256": "2005af27943bef805822ed4ca9726a380ae95331be89b9c13b27083b1708fed5"
+        "file": "daegu.routing.v10.sqlite",
+        "size": 78737408,
+        "sha256": "48e9cbe5d30be0e1d1c18e32d6c0be5faf50e8f7c856425400f78cd27af4900e"
       }
     },
     {
@@ -159,9 +159,9 @@
       "size": 12250987,
       "sha256": "d6128f56e230549321af453ec89c192072c236756781c3eaefb279231ccc60aa",
       "routing": {
-        "file": "incheon.routing.v9.sqlite",
-        "size": 92463104,
-        "sha256": "c166d1c1ba3dffc858e92dd6281efe59b3210a6e058c447428c47ae364646968"
+        "file": "incheon.routing.v10.sqlite",
+        "size": 93671424,
+        "sha256": "6b06f72dbbc909d1d5a14594e4bbe46a0d555267052da8ecfa6695af24e68017"
       }
     },
     {
@@ -176,9 +176,9 @@
       "size": 6956286,
       "sha256": "dbd651036cd8c95912f5d01bde5cd485981e17134547b55782a1488c18f2f309",
       "routing": {
-        "file": "gwangju.routing.v9.sqlite",
-        "size": 61612032,
-        "sha256": "faadde506851f3a8648f4ef58675f07ec9476a5f6bcc9dcfe9404b997917bf22"
+        "file": "gwangju.routing.v10.sqlite",
+        "size": 62443520,
+        "sha256": "1988f0b3921d9a28c9c5d798508e050377b98c38c67cf86b6c1c124104657c06"
       }
     },
     {
@@ -193,9 +193,9 @@
       "size": 5968683,
       "sha256": "2906c3b281f4d36a78174be4bb51fffea87a233a6a82854e7223d175fdbb8eb6",
       "routing": {
-        "file": "daejeon.routing.v9.sqlite",
-        "size": 56078336,
-        "sha256": "574d5a83009797cdc67b99bfefc05d3f7198a152a4036b62a78fb415611452f5"
+        "file": "daejeon.routing.v10.sqlite",
+        "size": 57094144,
+        "sha256": "7e52c6e99fb20ec0a7b1fe88cfad4e76ab3ff7de9727b8e6d7bba086e79b2169"
       }
     },
     {
@@ -210,9 +210,9 @@
       "size": 5976477,
       "sha256": "ba2f7c7439f73374ce09b0509a941a238469c5332b2ad0c3f74f5c9a42ac7b5a",
       "routing": {
-        "file": "ulsan.routing.v9.sqlite",
-        "size": 57872384,
-        "sha256": "bda32b871ca4412b0d600311a61d4ac9af798d6f9d090883926f108ae9872898"
+        "file": "ulsan.routing.v10.sqlite",
+        "size": 58961920,
+        "sha256": "c2453827d3cc70515902608729c8445ec0b7f43089d7b659fd965ba3891d3fab"
       }
     },
     {
@@ -227,9 +227,9 @@
       "size": 3980268,
       "sha256": "c2e4c66c54c4326f7621933e80b98497a7fc79bafe47dcf375fac81ef5e96776",
       "routing": {
-        "file": "sejong.routing.v9.sqlite",
-        "size": 36122624,
-        "sha256": "0423c35f781a853fee51dac076bb40ccbef557b0a2355b8fc7af15daaf3caa0d"
+        "file": "sejong.routing.v10.sqlite",
+        "size": 36696064,
+        "sha256": "14da6baedb8f8f17890e2c45243450beba19aef0412c9c9206854df2f5615fef"
       }
     },
     {
@@ -244,9 +244,9 @@
       "size": 77264015,
       "sha256": "85056360d067671232394b675d4c00e0c3bc31117e6ca5ca5d8bda8c07dd01a6",
       "routing": {
-        "file": "gyeonggi.routing.v9.sqlite",
-        "size": 607186944,
-        "sha256": "b52220d1b80f76814a6bd50c28507436112ecaa9b901bdf88c01da7debaa09da"
+        "file": "gyeonggi.routing.v10.sqlite",
+        "size": 616439808,
+        "sha256": "4e603d6327a4489977446c07645d289e9cd558a6a7db32d9723ff947c87de08a"
       }
     },
     {
@@ -261,9 +261,9 @@
       "size": 52569329,
       "sha256": "089f7d5bae512d45a29d6477d5eac6af8a8d9cd16b4e95632df5012e6169cf23",
       "routing": {
-        "file": "gangwon.routing.v9.sqlite",
-        "size": 465043456,
-        "sha256": "a6d25e9076fd86f7e360a0d7e47b56c214485e339cb9808a6c40e2e56e83f4fa"
+        "file": "gangwon.routing.v10.sqlite",
+        "size": 473653248,
+        "sha256": "68949e669ef1f0d455efe1c10b3116fcdbc145306f46d02e5e1805b5c01831f8"
       }
     },
     {
@@ -278,9 +278,9 @@
       "size": 38130028,
       "sha256": "f73a638ad9414834fe24144d3339ea3ff0d303f94d9ba5fc491535afe900becc",
       "routing": {
-        "file": "chungbuk.routing.v9.sqlite",
-        "size": 390647808,
-        "sha256": "ee37b29c87b2f2c325094bb8b0f16aac5eed29f82e90ce9adfa18dae56bc0d7c"
+        "file": "chungbuk.routing.v10.sqlite",
+        "size": 397914112,
+        "sha256": "9e13db5bdf213d44942c55ed857eb289a6966945a8e414c09715771cf3e42b09"
       }
     },
     {
@@ -295,9 +295,9 @@
       "size": 43607860,
       "sha256": "056231f0edfc489ea33ebd81d3b91608ba05c4d2aaddd5a1e30725a2938d28f7",
       "routing": {
-        "file": "chungnam.routing.v9.sqlite",
-        "size": 443219968,
-        "sha256": "4f58384d73d6cdc0d3e5e6aec98ee27146524fc64fedf7825fb26b3525d5516f"
+        "file": "chungnam.routing.v10.sqlite",
+        "size": 450019328,
+        "sha256": "71052a31f92408caf931a787a8a2c896b05e21cec905d23c919df8a2d5374c11"
       }
     },
     {
@@ -312,9 +312,9 @@
       "size": 31424813,
       "sha256": "db63539bc8c696cad991e2f496b39d709e7953dafb50abc2117af8c064631f7f",
       "routing": {
-        "file": "jeonbuk.routing.v9.sqlite",
-        "size": 282271744,
-        "sha256": "f711457c678a7dad3a908ae8e862f4522557b674de14851ae121ce2705b955bc"
+        "file": "jeonbuk.routing.v10.sqlite",
+        "size": 287162368,
+        "sha256": "d312fb8b62d13d42a3f9dc281a98195c4627b32a91c04739b79da204ba08444a"
       }
     },
     {
@@ -329,9 +329,9 @@
       "size": 40206698,
       "sha256": "dc74617fee16af2a292758d7884bffc73dba8169d8c9bbb339d309f5add22903",
       "routing": {
-        "file": "jeonnam.routing.v9.sqlite",
-        "size": 436965376,
-        "sha256": "d1c491c371db17a7783a419f61925d6f3a98ac59b32a63fd2f8c90cab2c7c579"
+        "file": "jeonnam.routing.v10.sqlite",
+        "size": 443564032,
+        "sha256": "be238acfe5283189524437fbca4133a66800f55ddb5d97f22f2d9ae4fa73c2c1"
       }
     },
     {
@@ -346,9 +346,9 @@
       "size": 57016219,
       "sha256": "ea574bf50dbf4fd63b84afac1c757a093b389dab44134d1e28dcd2c54adfec29",
       "routing": {
-        "file": "gyeongbuk.routing.v9.sqlite",
-        "size": 596443136,
-        "sha256": "a46e2d98821d75c6c09a14def64b279cbad6a930e0fd7b19048cc54417bdb407"
+        "file": "gyeongbuk.routing.v10.sqlite",
+        "size": 608096256,
+        "sha256": "0179c68cecfc3f1432a3247703a698c2bf36c79bc3b3db83e9988eacd4f8cbd4"
       }
     },
     {
@@ -363,9 +363,9 @@
       "size": 46478636,
       "sha256": "c9bec54714c4c4ea5a4f97633a842d1be25ab35dd55659e0b2e1a86fa7f539e6",
       "routing": {
-        "file": "gyeongnam.routing.v9.sqlite",
-        "size": 432910336,
-        "sha256": "7fa516815332d12ee9b5140b101949330cda5891ba06c753960fcdee5e55145c"
+        "file": "gyeongnam.routing.v10.sqlite",
+        "size": 440836096,
+        "sha256": "c9e39cff765fefab97bde39fb64f98269455491b392be8dfdbb9081607a01de4"
       }
     },
     {
@@ -380,9 +380,9 @@
       "size": 5607543,
       "sha256": "328b385a3949943688f6d1d6bfcb5e0974c178b0e8435aebf9dc2924595249e0",
       "routing": {
-        "file": "jeju.routing.v9.sqlite",
-        "size": 62107648,
-        "sha256": "fb6ecda15523efad9a241ccd9f1f10195c0958c1d907686425bc3a6572b1513e"
+        "file": "jeju.routing.v10.sqlite",
+        "size": 63102976,
+        "sha256": "273c640c707f0b3bf59878e2855bf9e4f2a8c2978b9f2b465c43149e524013de"
       }
     }
   ]

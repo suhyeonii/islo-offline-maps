@@ -1,6 +1,51 @@
+import os
+import struct
+import tempfile
 import unittest
+import zipfile
 
-from build_routing_graph import bicycle_profile
+from build_routing_graph import ElevationProvider, bicycle_profile
+
+
+class ElevationProviderTests(unittest.TestCase):
+    def test_tile_name_formatting(self):
+        self.assertEqual(ElevationProvider.tile_name(37.5665, 126.9780), "N37E126")
+        self.assertEqual(ElevationProvider.tile_name(-33.8688, 151.2093), "S34E151")
+        self.assertEqual(ElevationProvider.tile_name(40.7128, -74.0060), "N40W075")
+
+    def test_returns_zero_when_no_dem_dir_or_missing_tile(self):
+        provider = ElevationProvider(None)
+        self.assertEqual(provider.get_elevation(37.5, 126.5), 0)
+
+        with tempfile.TemporaryDirectory() as empty_dir:
+            provider = ElevationProvider(empty_dir)
+            self.assertEqual(provider.get_elevation(37.5, 126.5), 0)
+
+    def test_reads_and_interpolates_synthetic_hgt(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            # Create a synthetic 1201x1201 SRTM-3 tile for N37E126
+            dim = 1201
+            # Fill with a flat plane elevation = 150m
+            flat_tile = struct.pack(f">{dim * dim}h", *([150] * (dim * dim)))
+            tile_path = os.path.join(temp_dir, "N37E126.hgt")
+            with open(tile_path, "wb") as f:
+                f.write(flat_tile)
+
+            provider = ElevationProvider(temp_dir)
+            ele = provider.get_elevation(37.5, 126.5)
+            self.assertEqual(ele, 150)
+
+    def test_reads_hgt_from_zip_archive(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            dim = 1201
+            flat_tile = struct.pack(f">{dim * dim}h", *([220] * (dim * dim)))
+            zip_path = os.path.join(temp_dir, "N37E126.hgt.zip")
+            with zipfile.ZipFile(zip_path, "w") as zf:
+                zf.writestr("N37E126.hgt", flat_tile)
+
+            provider = ElevationProvider(temp_dir)
+            ele = provider.get_elevation(37.25, 126.75)
+            self.assertEqual(ele, 220)
 
 
 class BicycleProfileTests(unittest.TestCase):
