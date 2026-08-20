@@ -2,8 +2,13 @@
 set -euo pipefail
 
 repo="suhyeonii/islo-offline-maps"
-release="v0.1.0"
+# The app resolves maps, routing and search assets from one release base URL.
+# Replace only PMTiles in the current release, then publish the new manifest
+# checksums after every asset upload has completed.
+release="${ISLO_MAP_RELEASE:-v0.1.0}"
+manifest_release="${ISLO_MAP_MANIFEST_RELEASE:-v0.1.1-poi-points}"
 source_pbf="build/south-korea-latest.osm.pbf"
+tilemaker_config="/workspace/tilemaker-islo-config.json"
 
 regions=(
   "seoul|126.76,37.41,127.20,37.72"
@@ -31,11 +36,10 @@ for entry in "${regions[@]}"; do
   bbox="${entry#*|}"
   pbf="build/${id}.osm.pbf"
   tiles="build/${id}.pmtiles"
-  if print -r -- "$uploaded" | grep -qx "${id}.pmtiles"; then
-    echo "Skipping uploaded ${id}"
-    continue
-  fi
   echo "Building ${id}"
+  # POIs must remain individual Point features. Always rebuild and replace the
+  # PMTiles asset; stale local or release assets may still contain MultiPoint.
+  rm -f "$tiles"
   if [[ ! -f "$tiles" ]]; then
     parts=("${(@s:,:)bbox}")
     west="$parts[1]"; south="$parts[2]"; east="$parts[3]"; north="$parts[4]"
@@ -57,14 +61,19 @@ for entry in "${regions[@]}"; do
         -o "$part_pbf" "$source_pbf"
       merge=()
       [[ -f "$mbtiles" ]] && merge=(--merge)
-      docker run --rm -v "$PWD/build:/data" ghcr.io/systemed/tilemaker:master \
+      docker run --rm -v "$PWD/build:/data" -v "$PWD:/workspace:ro" ghcr.io/systemed/tilemaker:master \
         "/data/${id}-${part_number}.osm.pbf" --output "/data/${id}.mbtiles" \
-        --bbox "$quadrant" "${merge[@]}" --quiet
+        --bbox "$quadrant" --config "$tilemaker_config" "${merge[@]}" --quiet
       rm -f "$part_pbf"
     done
     pmtiles convert "$mbtiles" "$tiles"
     rm -f "$mbtiles"
   fi
   gh release upload "$release" "$tiles" --repo "$repo" --clobber
-  rm -f "$pbf" "$tiles"
+  rm -f "$pbf"
 done
+
+# Publish the manifest only after all replacement assets are uploaded, so an
+# app never receives a checksum for an asset that is not available yet.
+python3 refresh_map_manifest.py --release "$manifest_release" --asset-release "$release"
+gh release upload "$release" manifest.json --repo "$repo" --clobber
