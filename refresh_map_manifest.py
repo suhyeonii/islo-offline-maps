@@ -36,6 +36,10 @@ def main() -> None:
         if not path.is_file():
             raise FileNotFoundError(f"Missing rebuilt map: {path}")
         region.update(asset(path))
+        # The app compares this logical version before falling back to file
+        # identity. This keeps a legitimate installed map distinct from a
+        # damaged file even when release assets are hosted under a stable URL.
+        region["mapVersion"] = args.release
 
     asset_release = args.asset_release or args.release
     manifest["release"] = args.release

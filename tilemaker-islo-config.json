@@ -24,12 +24,12 @@
     "minzoom": 0,
     "maxzoom": 14,
     "basezoom": 14,
-    "include_ids": false,
-    "combine_below": 14,
+    "include_ids": true,
+    "combine_below": 0,
     "combine_points": false,
     "name": "Islo offline map tiles",
-    "version": "1.0",
-    "description": "OpenMapTiles-compatible offline maps with individual POI points",
+    "version": "1.1",
+    "description": "OpenMapTiles-compatible offline maps with unaggregated individual POI points",
     "compress": "gzip"
   }
 }

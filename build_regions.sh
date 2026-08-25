@@ -6,7 +6,7 @@ repo="suhyeonii/islo-offline-maps"
 # Replace only PMTiles in the current release, then publish the new manifest
 # checksums after every asset upload has completed.
 release="${ISLO_MAP_RELEASE:-v0.1.0}"
-manifest_release="${ISLO_MAP_MANIFEST_RELEASE:-v0.1.1-poi-points}"
+manifest_release="${ISLO_MAP_MANIFEST_RELEASE:-v0.1.2-individual-poi-points}"
 source_pbf="build/south-korea-latest.osm.pbf"
 tilemaker_config="/workspace/tilemaker-islo-config.json"
 

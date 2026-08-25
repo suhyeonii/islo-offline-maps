@@ -34,6 +34,21 @@ places = []
 accepted = {"amenity", "shop", "tourism", "leisure", "place", "building",
             "office", "healthcare", "public_transport", "railway"}
 
+
+def category_for(item_tags: dict[str, str]) -> str:
+    """Return one stable, semantic category instead of depending on set order.
+
+    `accepted` is a set, so iterating it made the selected category vary between
+    builds.  Shop/amenity/tourism values carry the POI meaning; building=yes and
+    similar structural tags must never replace them.
+    """
+    for key in ("shop", "amenity", "tourism", "leisure", "healthcare",
+                "public_transport", "railway", "office", "place", "building"):
+        value = item_tags.get(key)
+        if value:
+            return value
+    return "장소"
+
 for line in sys.stdin:
     if not line or line[0] not in {"n", "w"}:
         continue
@@ -55,16 +70,29 @@ for line in sys.stdin:
             sum(point[1] for point in points) / len(points),
         )
     name = item_tags.get("name") or item_tags.get("name:ko") or item_tags.get("name:en")
-    if not name or not accepted.intersection(item_tags):
+    if not name:
+        if item_tags.get("amenity") == "toilets":
+            name = "화장실"
+        elif item_tags.get("amenity") == "drinking_water":
+            name = "식수대"
+        elif item_tags.get("amenity") == "bicycle_parking":
+            name = "자전거 주차장"
+        elif item_tags.get("shop") == "bicycle":
+            name = "자전거 수리점"
+        else:
+            continue
+    if not accepted.intersection(item_tags):
         continue
     address = " ".join(filter(None, [item_tags.get("addr:city"), item_tags.get("addr:district"),
                                       item_tags.get("addr:street"), item_tags.get("addr:housenumber")]))
-    category = next((item_tags[key] for key in accepted if key in item_tags), "장소")
+    category = category_for(item_tags)
     places.append({
         "id": f"{line[0]}{osm_id}", "name": name,
         "name_ko": item_tags.get("name:ko", ""),
         "name_en": item_tags.get("name:en", ""),
         "subtitle": address or category,
+        "category": category,
+        "address": address,
         "latitude": coordinate[0], "longitude": coordinate[1],
         "searchTerms": " ".join(filter(None, [
             name, item_tags.get("name:ko"), item_tags.get("name:en"),
@@ -75,11 +103,13 @@ for line in sys.stdin:
 database = sqlite3.connect(args.output)
 database.execute("DROP TABLE IF EXISTS places")
 database.execute("CREATE VIRTUAL TABLE places USING fts5(id UNINDEXED,name,name_ko,name_en,subtitle,"
-                 "latitude UNINDEXED,longitude UNINDEXED,searchTerms,tokenize='unicode61')")
+                 "category,address,latitude UNINDEXED,longitude UNINDEXED,searchTerms,tokenize='unicode61')")
 database.executemany(
-    "INSERT INTO places(id,name,name_ko,name_en,subtitle,latitude,longitude,searchTerms) VALUES(?,?,?,?,?,?,?,?)",
+    "INSERT INTO places(id,name,name_ko,name_en,subtitle,category,address,latitude,longitude,searchTerms) "
+    "VALUES(?,?,?,?,?,?,?,?,?,?)",
     [(item["id"], item["name"], item["name_ko"], item["name_en"], item["subtitle"],
-      item["latitude"], item["longitude"], item["searchTerms"]) for item in places]
+      item["category"], item["address"], item["latitude"], item["longitude"], item["searchTerms"])
+     for item in places]
 )
 database.commit()
 database.execute("VACUUM")

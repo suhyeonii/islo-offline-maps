@@ -278,6 +278,41 @@ def penalty(values: dict[str, str], compact: bool) -> float | None:
     return profile[0] if profile else None
 
 
+def crossing_wait_seconds(crossing_tags: dict[str, str] | None, way_tags: dict[str, str]) -> int:
+    """Expected wait for one route crossing, based on the crossed road class.
+
+    We intentionally use an expected wait rather than a worst-case signal
+    cycle: 45 s for small streets, 75 s for ordinary 4–6 lane city roads, and
+    135 s for large intersections. OSM does not consistently provide lane
+    counts, so highway class is the fallback.
+    """
+    if not crossing_tags:
+        return 0
+
+    def lane_count(value: str) -> int:
+        try:
+            return max(0, int(value.split(";")[0]))
+        except (AttributeError, ValueError):
+            return 0
+
+    lanes = max(
+        lane_count(way_tags.get("lanes", "")),
+        lane_count(way_tags.get("lanes:forward", ""))
+            + lane_count(way_tags.get("lanes:backward", "")),
+    )
+    highway = way_tags.get("highway", "")
+    if lanes >= 8 or highway in {"trunk", "primary"}:
+        return 135
+    if lanes >= 4 or highway in {"secondary", "tertiary"}:
+        return 75
+    # A signalled crossing whose road class is missing is usually not a quiet
+    # two-lane street, so use the ordinary-city expectation.
+    if crossing_tags.get("crossing") == "traffic_signals" \
+            or crossing_tags.get("traffic_signals") == "yes":
+        return 75
+    return 45
+
+
 def haversine(a: tuple[float, float], b: tuple[float, float]) -> float:
     lat1, lon1 = map(math.radians, a)
     lat2, lon2 = map(math.radians, b)
@@ -334,6 +369,8 @@ def main() -> None:
                          meters REAL NOT NULL, cost REAL NOT NULL,
                          is_cycleway INTEGER NOT NULL DEFAULT 0,
                          is_dismount INTEGER NOT NULL DEFAULT 0,
+                         crossing_wait_seconds INTEGER NOT NULL DEFAULT 0,
+                         is_roundabout INTEGER NOT NULL DEFAULT 0,
                          PRIMARY KEY(src, dst)) WITHOUT ROWID;
       CREATE TABLE amenities(node_id INTEGER PRIMARY KEY, kind TEXT NOT NULL,
                              name TEXT, lat REAL NOT NULL, lon REAL NOT NULL);
@@ -342,11 +379,12 @@ def main() -> None:
                                   sequence INTEGER NOT NULL,
                                   PRIMARY KEY(node_id, route_id)) WITHOUT ROWID;
     """)
-    database.execute("INSERT INTO metadata VALUES('schemaVersion','2')")
+    database.execute("INSERT INTO metadata VALUES('schemaVersion','4')")
     database.execute("INSERT INTO metadata VALUES('kind',?)", ("compact" if args.compact else "detail",))
     pending_nodes: list[tuple[int, float, float, int]] = []
-    pending_edges: list[tuple[int, int, float, float, int, int]] = []
+    pending_edges: list[tuple[int, int, float, float, int, int, int, int]] = []
     pending_amenities: list[tuple[int, str, str | None, float, float]] = []
+    crossing_tags_by_node: dict[int, dict[str, str]] = {}
     did_flush_nodes = False
 
     for line in sys.stdin:
@@ -358,6 +396,8 @@ def main() -> None:
             if lat is not None and lon is not None:
                 raw_tags = next((value[1:] for value in fields if value.startswith("T")), "")
                 node_tags = tags(raw_tags)
+                if node_tags.get("highway") == "crossing" or node_tags.get("crossing"):
+                    crossing_tags_by_node[node_id] = node_tags
                 amenity = node_tags.get("amenity")
                 if amenity in {"drinking_water", "toilets"}:
                     pending_amenities.append(
@@ -428,24 +468,36 @@ def main() -> None:
                     or values.get("junction") == "roundabout"
                 )
                 reverse = bicycle_oneway == "-1" or general_oneway == "-1"
+            is_roundabout = values.get("junction") == "roundabout"
             for source, destination in zip(refs, refs[1:]):
                 if source not in way_coordinates or destination not in way_coordinates:
                     continue
                 meters = haversine(way_coordinates[source], way_coordinates[destination])
+                # Charge the wait when the directed route reaches the crossing
+                # node. The reverse edge is charged symmetrically at its own
+                # destination node.
+                forward_crossing_wait = crossing_wait_seconds(
+                    crossing_tags_by_node.get(destination), values
+                )
+                reverse_crossing_wait = crossing_wait_seconds(
+                    crossing_tags_by_node.get(source), values
+                )
                 edge_source, edge_destination = source, destination
                 if reverse:
                     edge_source, edge_destination = destination, source
                 pending_edges.append(
-                    (edge_source, edge_destination, meters, meters * weight, is_cycleway, is_dismount)
+                    (edge_source, edge_destination, meters, meters * weight, is_cycleway, is_dismount,
+                     reverse_crossing_wait if reverse else forward_crossing_wait, int(is_roundabout))
                 )
                 if not oneway and not reverse:
-                    pending_edges.append((destination, source, meters, meters * weight, is_cycleway, is_dismount))
+                    pending_edges.append((destination, source, meters, meters * weight, is_cycleway, is_dismount,
+                                          reverse_crossing_wait, int(is_roundabout)))
                 if len(pending_edges) >= 100_000:
-                    database.executemany("INSERT OR REPLACE INTO edges VALUES(?,?,?,?,?,?)", pending_edges)
+                    database.executemany("INSERT OR REPLACE INTO edges VALUES(?,?,?,?,?,?,?,?)", pending_edges)
                     pending_edges.clear()
 
     database.executemany("INSERT OR IGNORE INTO nodes VALUES(?,?,?,?)", pending_nodes)
-    database.executemany("INSERT OR REPLACE INTO edges VALUES(?,?,?,?,?,?)", pending_edges)
+    database.executemany("INSERT OR REPLACE INTO edges VALUES(?,?,?,?,?,?,?,?)", pending_edges)
     database.executemany("INSERT OR REPLACE INTO amenities VALUES(?,?,?,?,?)", pending_amenities)
     database.executescript("""
       CREATE INDEX nodes_lat ON nodes(lat);
