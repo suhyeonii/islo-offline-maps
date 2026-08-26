@@ -19,7 +19,16 @@ for entry in "${regions[@]}"; do
   extracted="build/${id}.places.osm.pbf"
   filtered="build/${id}.places.filtered.osm.pbf"
   osmium extract --overwrite --strategy complete_ways --bbox "$bbox" -o "$extracted" "$source_pbf"
-  osmium tags-filter --overwrite "$extracted" nwr/name -o "$filtered"
+  # 일반 장소는 이름이 있어야 검색할 수 있지만, 라이딩 편의시설은 OSM에
+  # 이름 없이 등록된 경우가 대부분입니다. 이 시설들을 name 필터에서
+  # 탈락시키면 앱의 강조 POI 색인에서도 영구히 사라집니다.
+  osmium tags-filter --overwrite "$extracted" \
+    nwr/name \
+    nwr/amenity=toilets \
+    nwr/amenity=drinking_water \
+    nwr/amenity=bicycle_parking \
+    nwr/shop=bicycle \
+    -o "$filtered"
   rm -f "build/${id}.places.v2.sqlite"
   osmium cat "$filtered" -f opl | python3 ./build_place_index.py "build/${id}.places.v2.sqlite"
   rm -f "$extracted" "$filtered"
