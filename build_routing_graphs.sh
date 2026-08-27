@@ -2,7 +2,7 @@
 set -euo pipefail
 
 source_pbf="build/south-korea-latest.osm.pbf"
-version="${ROUTING_VERSION:-v11}"
+version="${ROUTING_VERSION:-v14}"
 dem_dir="${DEM_DIR:-dem}"
 dem_args=()
 [[ -d "$dem_dir" ]] && dem_args=(--dem-dir "$dem_dir")
@@ -40,12 +40,16 @@ build_graph() {
     osmium cat "$filtered" -f opl | python3 ./build_routing_graph.py \
       --official-csv ./official_cycle_routes.csv "${dem_args[@]}" "$partial"
   fi
+  python3 ./build_routing_mld.py "$partial"
   mv "$partial" "$output"
   rm -f "$extracted" "$filtered"
 }
 
 # Nationwide backbone plus the same detailed region boundaries used by PMTiles.
 build_graph korea "" compact
+if [[ "${ROUTING_SCOPE:-all}" == "nationwide" ]]; then
+  exit 0
+fi
 regions=(
   "seoul|126.76,37.41,127.20,37.72" "busan|128.75,34.95,129.32,35.39"
   "daegu|128.35,35.55,129.02,36.02" "incheon|126.20,37.30,126.82,37.72"

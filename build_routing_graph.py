@@ -378,10 +378,30 @@ def main() -> None:
       CREATE TABLE official_nodes(node_id INTEGER NOT NULL, route_id INTEGER NOT NULL,
                                   sequence INTEGER NOT NULL,
                                   PRIMARY KEY(node_id, route_id)) WITHOUT ROWID;
+      CREATE TABLE hierarchy_portals(
+          node_id INTEGER PRIMARY KEY,
+          level0_cell INTEGER NOT NULL,
+          level1_cell INTEGER NOT NULL
+      ) WITHOUT ROWID;
+      CREATE TABLE hierarchy_shortcuts(
+          level INTEGER NOT NULL,
+          cell_id INTEGER NOT NULL,
+          profile INTEGER NOT NULL,
+          src INTEGER NOT NULL,
+          dst INTEGER NOT NULL,
+          cost REAL NOT NULL,
+          meters REAL NOT NULL,
+          PRIMARY KEY(level,cell_id,profile,src,dst)
+      ) WITHOUT ROWID;
+      CREATE TABLE hierarchy_level1_portals(
+          node_id INTEGER PRIMARY KEY,
+          level1_cell INTEGER NOT NULL
+      ) WITHOUT ROWID;
     """)
     database.execute("INSERT INTO metadata VALUES('schemaVersion','6')")
     database.execute("INSERT INTO metadata VALUES('kind',?)", ("compact" if args.compact else "detail",))
     database.execute("INSERT INTO metadata VALUES('routingIndex','bidirectional-v1')")
+    database.execute("INSERT INTO metadata VALUES('routingHierarchy','mld-v2')")
     pending_nodes: list[tuple[int, float, float, int]] = []
     pending_edges: list[tuple[int, int, float, float, int, int, int, int]] = []
     pending_amenities: list[tuple[int, str, str | None, float, float]] = []
@@ -514,6 +534,45 @@ def main() -> None:
       CREATE INDEX amenities_lat ON amenities(lat);
       ANALYZE;
     """)
+    # MLD level 0 uses roughly 5 km cells and level 1 roughly 25 km cells.
+    # Only nodes whose edge crosses a level-0 boundary become portals; ordinary
+    # geometry nodes are deliberately omitted from this table. Shortcut
+    # generation consumes these stable portal IDs in the next preprocessing
+    # phase without duplicating the nationwide node table.
+    database.execute("""
+      INSERT OR IGNORE INTO hierarchy_portals(node_id,level0_cell,level1_cell)
+      WITH crossing(src,dst) AS (
+        SELECT e.src,e.dst
+        FROM edges e JOIN nodes a ON a.id=e.src JOIN nodes b ON b.id=e.dst
+        WHERE (CAST((a.lat+90.0)*20 AS INTEGER) != CAST((b.lat+90.0)*20 AS INTEGER)
+           OR CAST((a.lon+180.0)*20 AS INTEGER) != CAST((b.lon+180.0)*20 AS INTEGER))
+      ), endpoint(node_id) AS (
+        SELECT src FROM crossing UNION SELECT dst FROM crossing
+      )
+      SELECT p.node_id,
+             CAST((n.lat+90.0)*20 AS INTEGER)*10000 + CAST((n.lon+180.0)*20 AS INTEGER),
+             CAST((n.lat+90.0)*4 AS INTEGER)*10000 + CAST((n.lon+180.0)*4 AS INTEGER)
+      FROM endpoint p JOIN nodes n ON n.id=p.node_id
+    """)
+    database.execute("CREATE INDEX hierarchy_portals_level0 ON hierarchy_portals(level0_cell,node_id)")
+    database.execute("CREATE INDEX hierarchy_portals_level1 ON hierarchy_portals(level1_cell,node_id)")
+    database.execute("""
+      INSERT OR IGNORE INTO hierarchy_level1_portals(node_id,level1_cell)
+      WITH crossing(src,dst) AS (
+        SELECT e.src,e.dst
+        FROM edges e JOIN nodes a ON a.id=e.src JOIN nodes b ON b.id=e.dst
+        WHERE (CAST((a.lat+90.0)*4 AS INTEGER) != CAST((b.lat+90.0)*4 AS INTEGER)
+           OR CAST((a.lon+180.0)*4 AS INTEGER) != CAST((b.lon+180.0)*4 AS INTEGER))
+      ), endpoint(node_id) AS (
+        SELECT src FROM crossing UNION SELECT dst FROM crossing
+      )
+      SELECT p.node_id,
+             CAST((n.lat+90.0)*4 AS INTEGER)*10000 + CAST((n.lon+180.0)*4 AS INTEGER)
+      FROM endpoint p JOIN nodes n ON n.id=p.node_id
+    """)
+    database.execute("CREATE INDEX hierarchy_level1_portals_cell ON hierarchy_level1_portals(level1_cell,node_id)")
+    database.execute("CREATE INDEX hierarchy_shortcuts_source ON hierarchy_shortcuts(level,profile,src)")
+    database.execute("CREATE INDEX hierarchy_shortcuts_destination ON hierarchy_shortcuts(level,profile,dst)")
     if args.official_csv:
         database.executemany("INSERT INTO official_routes VALUES(?,?)", route_names.items())
         official_nodes = [
