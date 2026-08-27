@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "release": "v0.1.4-poi-20260826",
-  "generatedAt": "2026-08-26T10:55:23+09:00",
+  "release": "v0.1.5-poi-identity-20260827",
+  "generatedAt": "2026-08-27T01:20:19+09:00",
   "baseURL": "https://github.com/suhyeonii/islo-offline-maps/releases/download/v0.1.0",
   "nationwideRouting": {
     "file": "korea.routing.v10.sqlite",
@@ -15,155 +15,155 @@
   "searchIndexes": {
     "seoul": {
       "file": "seoul.places.v2.sqlite",
-      "size": 51724288,
-      "sha256": "f5dd06d0142aa9ca659655aaf26f5ea331e8fc7279ae6c0ec29a5e0e0bf5f87c",
+      "size": 56401920,
+      "sha256": "dd07bcdc7e576a175eadad0c44959e3d61826a998ed89a532d73c8b3946fea93",
       "downloadFile": "seoul.places.v2.sqlite.lzfse",
-      "downloadSize": 13977306,
-      "downloadSHA256": "e7fb80ae7b4b0056c7c281377f40ce78cb884ea2841841b7e6fc7fd237de8867",
+      "downloadSize": 15354547,
+      "downloadSHA256": "5369eb8e5d4fad0fd2c169b8dcabd3b60664e25d7973b9e1613d386006ca1708",
       "compression": "lzfse"
     },
     "busan": {
       "file": "busan.places.v2.sqlite",
-      "size": 5955584,
-      "sha256": "8ee58fcb3d842c592e087247177e60c1caa95d681e6aa51df587e7fb0c77196b",
+      "size": 6795264,
+      "sha256": "434cd0b8071ec91960bd69555724cd484bf63a979cc49b63fa481a9393323638",
       "downloadFile": "busan.places.v2.sqlite.lzfse",
-      "downloadSize": 1671375,
-      "downloadSHA256": "9ece6fe8563ea800306268fe666ff5c3ce26045343913d9462814c56c125c5f1",
+      "downloadSize": 1932766,
+      "downloadSHA256": "d491ccddfa34a7dbed7787b6e56a81dea0d6a4244024b97468cf9aaa32abce38",
       "compression": "lzfse"
     },
     "daegu": {
       "file": "daegu.places.v2.sqlite",
-      "size": 3620864,
-      "sha256": "4388e550dbf7e2b5d1e032ad4244eef16351811c3e92e3e6bb26f69d2fea87d2",
+      "size": 4235264,
+      "sha256": "4dc4e072b34113223e77ac7f766bdcd5cb77af00ae7272b207a6bbcacffba31c",
       "downloadFile": "daegu.places.v2.sqlite.lzfse",
-      "downloadSize": 1080079,
-      "downloadSHA256": "b579213be90ef65b561803990b1ab717f07ecb40432f3b11148e9fd9d506927b",
+      "downloadSize": 1276689,
+      "downloadSHA256": "4f9888da3eb411fa1b98ef4491e50153d973527bb6886d615bce304b70e52711",
       "compression": "lzfse"
     },
     "incheon": {
       "file": "incheon.places.v2.sqlite",
-      "size": 10530816,
-      "sha256": "a6a1ac1b16fd0fc46c51547edafd6a6c5a46f26fe7142da8c269f5275101faf0",
+      "size": 12230656,
+      "sha256": "d1d013a1f7816c0774d222f4e7b2adf4281e37d83b8864cb1ddb58cd7fcf61f9",
       "downloadFile": "incheon.places.v2.sqlite.lzfse",
-      "downloadSize": 3006171,
-      "downloadSHA256": "00441c731fe92d578b98c9d498bb18d69ee12dbcdbda18b76fcdd1c7b2d42492",
+      "downloadSize": 3524905,
+      "downloadSHA256": "531cdd5e5bb9fed93d48f00ea5ff756a7e5b7b4a416149763148927fc80b3612",
       "compression": "lzfse"
     },
     "gwangju": {
       "file": "gwangju.places.v2.sqlite",
-      "size": 4714496,
-      "sha256": "e1ccf9468fa20a37ac15dda5c0c218564b0fb4b1211c6d121a0edb971b8970b9",
+      "size": 5414912,
+      "sha256": "47f90d2c6a5fd1a0c0e2fc0dc4186a8c48699d399ebd6e0e0b59214f508019d8",
       "downloadFile": "gwangju.places.v2.sqlite.lzfse",
-      "downloadSize": 1392884,
-      "downloadSHA256": "e1a1ee747d5929e808a65f72f0f01329229dd600c506c139e7ddc5a69c3c5ce3",
+      "downloadSize": 1615073,
+      "downloadSHA256": "56b528341cac0d622abccb3efab0d54f8f31e7d33e8d79565819c60b1bd26514",
       "compression": "lzfse"
     },
     "daejeon": {
       "file": "daejeon.places.v2.sqlite",
-      "size": 3407872,
-      "sha256": "7568449cf31cd646a6ed7ac69baf5f348c730c1fbd7dc133612cad4945e1f3ba",
+      "size": 3907584,
+      "sha256": "e70110e7d78908edbafb547ae8cf95be0d04ad813e136d57953b79ac2b4e0f8f",
       "downloadFile": "daejeon.places.v2.sqlite.lzfse",
-      "downloadSize": 1017849,
-      "downloadSHA256": "4f887a59c2cf517232395736d49ee79664488cdd05a104e17c9cafbeea74c9f3",
+      "downloadSize": 1181772,
+      "downloadSHA256": "d98e6edda63ecd5d9e2258a4e37c8292394fe23430b623df4c29b13b8f67d2a5",
       "compression": "lzfse"
     },
     "ulsan": {
       "file": "ulsan.places.v2.sqlite",
-      "size": 3084288,
-      "sha256": "1098fee524f16260ac72a9bb398d316a7cfa80fe9ba09730f415a69de3a570a1",
+      "size": 3563520,
+      "sha256": "c78e916a77aabaf8d740bce6f4e9dbb34641e8776e858c6910393377861955fd",
       "downloadFile": "ulsan.places.v2.sqlite.lzfse",
-      "downloadSize": 911127,
-      "downloadSHA256": "52eaffc2c9554af8786b5fa4b2a8840235645cdbfa4b0f21505237c2c07ffa57",
+      "downloadSize": 1065209,
+      "downloadSHA256": "480e674c820cb9b85d2763bcc1c87507aa3a3650be5622af780fa891d4950971",
       "compression": "lzfse"
     },
     "sejong": {
       "file": "sejong.places.v2.sqlite",
-      "size": 1748992,
-      "sha256": "fa8218ef20b572522cede4f2fe4a2cda03ede14ec9d2d8ebf5111de8a53988b7",
+      "size": 2023424,
+      "sha256": "30854de18f0b759cbd872cb89d931a5dc9022d433cafaf1829558f1a8b5518fc",
       "downloadFile": "sejong.places.v2.sqlite.lzfse",
-      "downloadSize": 529015,
-      "downloadSHA256": "a40dac8f9cb5cf9735a5df2f05b7a6ae3d4c43acfe51885b8e98d3b189bbc71d",
+      "downloadSize": 617515,
+      "downloadSHA256": "a9230d829a7c239706c072073b950f22a7c642ec3a95e2f477e40e48d88a9805",
       "compression": "lzfse"
     },
     "gyeonggi": {
       "file": "gyeonggi.places.v2.sqlite",
-      "size": 81539072,
-      "sha256": "60e79c5cf8810777309e3a030eaaa1afe20413296bad146e534bf39942793ae0",
+      "size": 91222016,
+      "sha256": "44cabb803dba4fcd3ceaeb954d5b26698c46eafd2f0d5cee83f07edc306ddb75",
       "downloadFile": "gyeonggi.places.v2.sqlite.lzfse",
-      "downloadSize": 22841202,
-      "downloadSHA256": "b0040ce3dc6f80665cfffc01dacf6d29cdc679deddfbccda3f641f8fe21c5842",
+      "downloadSize": 25824575,
+      "downloadSHA256": "7c0bf1fefc45cb04f0ad875138ad0dee48cf29f6c32a67c6313ab4fcb785831a",
       "compression": "lzfse"
     },
     "gangwon": {
       "file": "gangwon.places.v2.sqlite",
-      "size": 33148928,
-      "sha256": "8ade2751954ec6ce18c3007862f3027265bd83213b8e42df1d603404f4a6c097",
+      "size": 37326848,
+      "sha256": "729af0c1139ea918524cb309adcb0c0aba9656f1d1e4aeb879c492167290303c",
       "downloadFile": "gangwon.places.v2.sqlite.lzfse",
-      "downloadSize": 9427627,
-      "downloadSHA256": "df68074ccf04e0d2aa020a16b414012d5ca7c7f456f301436fc9a77547e10315",
+      "downloadSize": 10724424,
+      "downloadSHA256": "39b3e699821353266d8ef5e6782576a57b6326d8462498021eb421353487c70f",
       "compression": "lzfse"
     },
     "chungbuk": {
       "file": "chungbuk.places.v2.sqlite",
-      "size": 10588160,
-      "sha256": "84d2ecd9e843e8b482c0982461eb2b23eb6fcee59696d81537b90d2f11cbd855",
+      "size": 12103680,
+      "sha256": "8b9478637a699ad99bd56685e7959180988be8bd529ecf0c65286475a06048a3",
       "downloadFile": "chungbuk.places.v2.sqlite.lzfse",
-      "downloadSize": 3177195,
-      "downloadSHA256": "1093a3b4e9b024f26f3203b53e25cefa28bad6bca5f843080da13650ec5fa9cb",
+      "downloadSize": 3674505,
+      "downloadSHA256": "be8cd3e7151508bad0491f7eb23ca22546e62ccd44047b70cdc55ea263daae51",
       "compression": "lzfse"
     },
     "chungnam": {
       "file": "chungnam.places.v2.sqlite",
-      "size": 14901248,
-      "sha256": "4b159aa0ff3e047aa30a258232f1ac880a28ebe6f65609c60bf5a8ea82c05f1b",
+      "size": 17330176,
+      "sha256": "d2f0e2f6425aa6304fb2d61338d212ff9a1630e5e903e4eca5874c562a041458",
       "downloadFile": "chungnam.places.v2.sqlite.lzfse",
-      "downloadSize": 4523208,
-      "downloadSHA256": "1cba880465b6bcb37ce347a79dc6be239dad1fa9f15c1691d526463ea14ffa0b",
+      "downloadSize": 5302422,
+      "downloadSHA256": "e0d766e151b487665a1cb0b09fc37b6b26a5e404e49da9c737da789729637cd8",
       "compression": "lzfse"
     },
     "jeonbuk": {
       "file": "jeonbuk.places.v2.sqlite",
-      "size": 6184960,
-      "sha256": "68e6f13dc91a7c70acac9a7c3448543a3292264d781d1ebaf28df0787c88a0a9",
+      "size": 6897664,
+      "sha256": "a70b67750e5e68f1fb664858b53ecef35f98074ff7d00a78cb780620dd5f5157",
       "downloadFile": "jeonbuk.places.v2.sqlite.lzfse",
-      "downloadSize": 1842053,
-      "downloadSHA256": "7cdeffbf8e797e1db410015a88a2b3e6186bfcd6792769a0dd2860436d7e54e4",
+      "downloadSize": 2078227,
+      "downloadSHA256": "461004bf08694fe61be60d9949098a313a3bbb063a4996c5b7f9dff7365e4cc3",
       "compression": "lzfse"
     },
     "jeonnam": {
       "file": "jeonnam.places.v2.sqlite",
-      "size": 12636160,
-      "sha256": "cbd6628385e20e1173518c6cf077f7fec9240d61193973849db55122384744a4",
+      "size": 14241792,
+      "sha256": "4f11e3608203ec2280918b47d67dc6db9cbf20662ad939b0554c1295788a93cb",
       "downloadFile": "jeonnam.places.v2.sqlite.lzfse",
-      "downloadSize": 3865192,
-      "downloadSHA256": "961aac6019199b1a9866094b3512cbeadb2e96cf7e0eaf2595bc21941723a470",
+      "downloadSize": 4381999,
+      "downloadSHA256": "0be88af9e8515f1ef7a063296a58325f3284bf0fd2249caa10d0edb0b28e5d37",
       "compression": "lzfse"
     },
     "gyeongbuk": {
       "file": "gyeongbuk.places.v2.sqlite",
-      "size": 14958592,
-      "sha256": "92c2a0046133612e8338fc2bb463e2aba92dc1944315b16c944e721bba72043d",
+      "size": 17084416,
+      "sha256": "7bfdcaeaf1eb4eda6f5bc63491269300cf6f34e2d6cd095b39151ed17d9b1030",
       "downloadFile": "gyeongbuk.places.v2.sqlite.lzfse",
-      "downloadSize": 4466329,
-      "downloadSHA256": "0de4c032b4ed7cb80ca213dacfd8eb195990e98cf628a3850d2990d1d3496808",
+      "downloadSize": 5140761,
+      "downloadSHA256": "507a113e90c3b05d0993b8fb69bbe1a212e0f3c08b244b2d425e4b5ac8eaa715",
       "compression": "lzfse"
     },
     "gyeongnam": {
       "file": "gyeongnam.places.v2.sqlite",
-      "size": 19779584,
-      "sha256": "83a613c088cbfe0ccfb0bc0dd2c73c90de114429dd9cbb70c578bba21248cf6e",
+      "size": 22433792,
+      "sha256": "4993f79e9c35414e09af00ca6deb7403b9721c3ef0751d0cddf28601169ad130",
       "downloadFile": "gyeongnam.places.v2.sqlite.lzfse",
-      "downloadSize": 5806562,
-      "downloadSHA256": "a90ebac151d20a72eef9a7a6fe60cecbfa778beee99308dace701bea43c2fc70",
+      "downloadSize": 6655620,
+      "downloadSHA256": "7d19b01108d842ec4d76c26ab9f489b15a337441bb99b3c9d8039d8651add1bc",
       "compression": "lzfse"
     },
     "jeju": {
       "file": "jeju.places.v2.sqlite",
-      "size": 4370432,
-      "sha256": "4f64ba00e91ebc0e11aa01cef9369fa84a0112f72c652cc686789fe476487c09",
+      "size": 4718592,
+      "sha256": "23a5fafa430215e2f6c96691631e9b9103f8c06d707b08c7eff2d93c0b085fd0",
       "downloadFile": "jeju.places.v2.sqlite.lzfse",
-      "downloadSize": 1278347,
-      "downloadSHA256": "3210feb98270dbab5cd738684f4ded6a593e104556356b4e347d21220487b0b8",
+      "downloadSize": 1390307,
+      "downloadSHA256": "c3d4a8fba09ce6243f44d582cd078e6b89dc657b043da542c651ae2a624afd23",
       "compression": "lzfse"
     }
   },
@@ -177,8 +177,8 @@
       "east": 127.2,
       "available": true,
       "mapFile": "seoul.pmtiles",
-      "size": 29807077,
-      "sha256": "c52f41a4d036a6671d1b94e415991681ecc4755b3ca5ec53d9db19fc3ca5eb42",
+      "size": 34301721,
+      "sha256": "80d31cbb563a053858c4b22e1500168932add4778d96a524e71d0b2d518153af",
       "routing": {
         "file": "seoul.routing.v10.sqlite",
         "size": 149270528,
@@ -187,7 +187,8 @@
         "downloadSize": 59903941,
         "downloadSHA256": "4ed48295f422dcaa9a8e23f2afd46e144b09094b2a9a06e43e83d3f7ba2f12f0",
         "compression": "lzfse"
-      }
+      },
+      "mapVersion": "v0.1.5-poi-identity-20260827"
     },
     {
       "id": "busan",
@@ -198,8 +199,8 @@
       "east": 129.32,
       "available": true,
       "mapFile": "busan.pmtiles",
-      "size": 10226297,
-      "sha256": "2443a38a59858227834393b66c9e63f9e7e66c3685f25c429e3ac7886fd4696b",
+      "size": 11419927,
+      "sha256": "ed57adafd0e4b9e5e89b8ddd77792ab2da5e309af9a9e7dde67c12f4873c7fd9",
       "routing": {
         "file": "busan.routing.v10.sqlite",
         "size": 65425408,
@@ -208,7 +209,8 @@
         "downloadSize": 26902015,
         "downloadSHA256": "3954767eea02c7ffcabaaff10ad5912d59fadf4650a86cd81388c39564c80979",
         "compression": "lzfse"
-      }
+      },
+      "mapVersion": "v0.1.5-poi-identity-20260827"
     },
     {
       "id": "daegu",
@@ -219,8 +221,8 @@
       "east": 129.02,
       "available": true,
       "mapFile": "daegu.pmtiles",
-      "size": 10707378,
-      "sha256": "844193f3965530040bb2ab21686e23bdc2e64eb9dcaf5f01f84de0a3f19800b9",
+      "size": 11788914,
+      "sha256": "c5282555a05d6ebdecbd83440bcafe1ab3e6eb568c5877629fbc61352fcf2e06",
       "routing": {
         "file": "daegu.routing.v10.sqlite",
         "size": 80838656,
@@ -229,7 +231,8 @@
         "downloadSize": 32128569,
         "downloadSHA256": "8fd4908e33fafc29ccba94fa8294090257bfcadcdfe0847402457475f101f4eb",
         "compression": "lzfse"
-      }
+      },
+      "mapVersion": "v0.1.5-poi-identity-20260827"
     },
     {
       "id": "incheon",
@@ -240,8 +243,8 @@
       "east": 126.82,
       "available": true,
       "mapFile": "incheon.pmtiles",
-      "size": 15444341,
-      "sha256": "3881d8ade66525a9342c86031a7e6cc7149ef6ae1ab423a41f909377fe11559b",
+      "size": 17166176,
+      "sha256": "f86472f1fd56cd4798f9dfb78fa00d8399638491c7ec064dce3f5fc678ea7378",
       "routing": {
         "file": "incheon.routing.v10.sqlite",
         "size": 96530432,
@@ -250,7 +253,8 @@
         "downloadSize": 36293082,
         "downloadSHA256": "3ff5851250167056026ffd37cc8c7d0506426145c539424324a2362108bfb454",
         "compression": "lzfse"
-      }
+      },
+      "mapVersion": "v0.1.5-poi-identity-20260827"
     },
     {
       "id": "gwangju",
@@ -261,8 +265,8 @@
       "east": 127.02,
       "available": true,
       "mapFile": "gwangju.pmtiles",
-      "size": 8913286,
-      "sha256": "38b1812530a2f9c8ae9602f7622aa73e6625e71567ff539e83fe3a952871658a",
+      "size": 9820829,
+      "sha256": "ad7ec81c3dd4fe26cf182e7cf9941e9dfeeab202035d89471218469aa2a42630",
       "routing": {
         "file": "gwangju.routing.v10.sqlite",
         "size": 64098304,
@@ -271,7 +275,8 @@
         "downloadSize": 24564965,
         "downloadSHA256": "b739878f267e7a976c04b57bbbd89ebda2f495c6617c3cf969c1241cfee636a7",
         "compression": "lzfse"
-      }
+      },
+      "mapVersion": "v0.1.5-poi-identity-20260827"
     },
     {
       "id": "daejeon",
@@ -282,8 +287,8 @@
       "east": 127.56,
       "available": true,
       "mapFile": "daejeon.pmtiles",
-      "size": 7624661,
-      "sha256": "a17c5d8d61723c4a24c8b6eacf3981a14af48052bd907fd87b32212d3d3d74fd",
+      "size": 8403776,
+      "sha256": "05da1bed552b076532a860e83dc985dea493f70e9130c1a3d21c3d8b63a38afc",
       "routing": {
         "file": "daejeon.routing.v10.sqlite",
         "size": 58638336,
@@ -292,7 +297,8 @@
         "downloadSize": 24677529,
         "downloadSHA256": "36d99b7477cc3c3e9aed0ac98952cc50c94e6a52a8611509c26915baed95f3cc",
         "compression": "lzfse"
-      }
+      },
+      "mapVersion": "v0.1.5-poi-identity-20260827"
     },
     {
       "id": "ulsan",
@@ -303,8 +309,8 @@
       "east": 129.49,
       "available": true,
       "mapFile": "ulsan.pmtiles",
-      "size": 7390928,
-      "sha256": "6656e486955c559399c8d97ab159b9422ba3dd32ce1c3397c3c853be38d5d0fc",
+      "size": 8099096,
+      "sha256": "02dcd7e9d699c0d50c98f230b59aa5f0e5d0a1dbcddb05246f4e3b2b829b1982",
       "routing": {
         "file": "ulsan.routing.v10.sqlite",
         "size": 60297216,
@@ -313,7 +319,8 @@
         "downloadSize": 23489931,
         "downloadSHA256": "acb2a5e208713f3483c7ecd9f33f4d807616cecc670c3a969b78c6c20578e39e",
         "compression": "lzfse"
-      }
+      },
+      "mapVersion": "v0.1.5-poi-identity-20260827"
     },
     {
       "id": "sejong",
@@ -324,8 +331,8 @@
       "east": 127.38,
       "available": true,
       "mapFile": "sejong.pmtiles",
-      "size": 4975341,
-      "sha256": "068e6cfed3576c8f0092eb58909f4b302d1c42b0df88ccdb11e5df93abbdd718",
+      "size": 5380634,
+      "sha256": "927df1533bfa68aa1495fe56f9e39d7ab14ff66ff28b0da964cd82f2be022147",
       "routing": {
         "file": "sejong.routing.v10.sqlite",
         "size": 37720064,
@@ -334,7 +341,8 @@
         "downloadSize": 14750079,
         "downloadSHA256": "8eb59c2a3150c1c3f86c382efe2f21d1de62491c9e015036968ae79aab9f699c",
         "compression": "lzfse"
-      }
+      },
+      "mapVersion": "v0.1.5-poi-identity-20260827"
     },
     {
       "id": "gyeonggi",
@@ -345,8 +353,8 @@
       "east": 127.86,
       "available": true,
       "mapFile": "gyeonggi.pmtiles",
-      "size": 97359486,
-      "sha256": "7e46c5ce752095f7a9456f28c536235a40686df233057d699a41ad7d3c04858a",
+      "size": 108412422,
+      "sha256": "aed35d7e22731d121efe5bef2b64663a3d2c41b1e2f6f8d5861e6e53f946e78e",
       "routing": {
         "file": "gyeonggi.routing.v10.sqlite",
         "size": 633618432,
@@ -355,7 +363,8 @@
         "downloadSize": 243092172,
         "downloadSHA256": "031269071ff12bded72a1080dc76d839b2c699204bf4813e4478cc84df1d9f40",
         "compression": "lzfse"
-      }
+      },
+      "mapVersion": "v0.1.5-poi-identity-20260827"
     },
     {
       "id": "gangwon",
@@ -366,8 +375,8 @@
       "east": 129.37,
       "available": true,
       "mapFile": "gangwon.pmtiles",
-      "size": 63441334,
-      "sha256": "0dab922f8e1d7df6d0350a0cc77796ac34cba196eaaf3ebda9ff447fc652669b",
+      "size": 69467697,
+      "sha256": "14d627b8b18577661aa6664eaf59ffae897a8e484fe59d1fa57c8e79b43af81d",
       "routing": {
         "file": "gangwon.routing.v10.sqlite",
         "size": 488157184,
@@ -376,7 +385,8 @@
         "downloadSize": 186378768,
         "downloadSHA256": "bbc420324d64c14c642df656b80d5b97fa0187c1b8716a5666b2cb11734c58ad",
         "compression": "lzfse"
-      }
+      },
+      "mapVersion": "v0.1.5-poi-identity-20260827"
     },
     {
       "id": "chungbuk",
@@ -387,8 +397,8 @@
       "east": 128.65,
       "available": true,
       "mapFile": "chungbuk.pmtiles",
-      "size": 45741574,
-      "sha256": "db0735ab96af4adfd43b78d69a183d2d6cd871286afe19e92abd5bce32c77388",
+      "size": 49323553,
+      "sha256": "e2d57d940848ce6c6571bb50122319b2441ced8224e096b59f45702adab5a9b9",
       "routing": {
         "file": "chungbuk.routing.v10.sqlite",
         "size": 408088576,
@@ -397,7 +407,8 @@
         "downloadSize": 157664966,
         "downloadSHA256": "ef4bce8c1f7f4b362dafac05b7b0b554202063a83abf316a500a9154f4cb759d",
         "compression": "lzfse"
-      }
+      },
+      "mapVersion": "v0.1.5-poi-identity-20260827"
     },
     {
       "id": "chungnam",
@@ -408,8 +419,8 @@
       "east": 127.65,
       "available": true,
       "mapFile": "chungnam.pmtiles",
-      "size": 53770081,
-      "sha256": "9b9f9030df8fbd537c64be87d5bdab617b28e2f7ddb6e7413744cc0410a1eb2d",
+      "size": 58293918,
+      "sha256": "e7bc78992ff88be02755b7303118f7e85d98fd80ad4207745b060fc52072a66f",
       "routing": {
         "file": "chungnam.routing.v10.sqlite",
         "size": 463536128,
@@ -418,7 +429,8 @@
         "downloadSize": 177104534,
         "downloadSHA256": "bcbcc8e5c4302f0ad9095b0bb6b685d54df6ea53a8d292a6f471587221da0d5b",
         "compression": "lzfse"
-      }
+      },
+      "mapVersion": "v0.1.5-poi-identity-20260827"
     },
     {
       "id": "jeonbuk",
@@ -429,8 +441,8 @@
       "east": 127.88,
       "available": true,
       "mapFile": "jeonbuk.pmtiles",
-      "size": 37798188,
-      "sha256": "77e7d9ce6b2d09e5d52acae35d8e7166f153ba19e6eec5b604a6e59113a24481",
+      "size": 40357946,
+      "sha256": "1c26415beb8b03bbb411bf47f0c8d16561d629ee8c76ae1221b00f25142b5b9e",
       "routing": {
         "file": "jeonbuk.routing.v10.sqlite",
         "size": 295034880,
@@ -439,7 +451,8 @@
         "downloadSize": 116151373,
         "downloadSHA256": "9f476f450b104cc135df31a27d511c999f65d9791b8d874990604027fa987f2c",
         "compression": "lzfse"
-      }
+      },
+      "mapVersion": "v0.1.5-poi-identity-20260827"
     },
     {
       "id": "jeonnam",
@@ -450,8 +463,8 @@
       "east": 127.88,
       "available": true,
       "mapFile": "jeonnam.pmtiles",
-      "size": 47919003,
-      "sha256": "18a5cdd4b3c3733f518ec3e99862122494162bd51d1712e66aa6f24cd836354e",
+      "size": 51370354,
+      "sha256": "c5fdf0644dfcee34a360360690fb69d962b4b577c4455d145d8e3a9473cd419c",
       "routing": {
         "file": "jeonnam.routing.v10.sqlite",
         "size": 455290880,
@@ -460,7 +473,8 @@
         "downloadSize": 171237301,
         "downloadSHA256": "b8c19ad724f90104b4a068826077693877b77c186723db72ecd6b6a10c4b24a9",
         "compression": "lzfse"
-      }
+      },
+      "mapVersion": "v0.1.5-poi-identity-20260827"
     },
     {
       "id": "gyeongbuk",
@@ -471,8 +485,8 @@
       "east": 130.95,
       "available": true,
       "mapFile": "gyeongbuk.pmtiles",
-      "size": 67315364,
-      "sha256": "5416aec8ad6b00c6a1f481e2261717c64c5d0102073b54f827a82382bfbf6b8f",
+      "size": 72623499,
+      "sha256": "ccbb76bf62787f573145c841793c8c4e4e6a49b3860dfaf279bd862f17baea88",
       "routing": {
         "file": "gyeongbuk.routing.v10.sqlite",
         "size": 624578560,
@@ -481,7 +495,8 @@
         "downloadSize": 237223568,
         "downloadSHA256": "4b39e9e0d21af51de1d048cc56dc287a8826c2b19fb7e770eca19613857057e7",
         "compression": "lzfse"
-      }
+      },
+      "mapVersion": "v0.1.5-poi-identity-20260827"
     },
     {
       "id": "gyeongnam",
@@ -492,8 +507,8 @@
       "east": 129.25,
       "available": true,
       "mapFile": "gyeongnam.pmtiles",
-      "size": 56382040,
-      "sha256": "053059920f8fbf2c41e1179549fed64161c404defd223a71060a136658d15c84",
+      "size": 61446517,
+      "sha256": "0b17fde3d4f5d05ade3576e13004d7d628dd977e02e4e3e02967a56ccffa99db",
       "routing": {
         "file": "gyeongnam.routing.v10.sqlite",
         "size": 452169728,
@@ -502,7 +517,8 @@
         "downloadSize": 176956402,
         "downloadSHA256": "f2c49142494f28a260ddae4bcccfa3f1668666beb0ec39cd37abf532f405b7f4",
         "compression": "lzfse"
-      }
+      },
+      "mapVersion": "v0.1.5-poi-identity-20260827"
     },
     {
       "id": "jeju",
@@ -513,8 +529,8 @@
       "east": 126.98,
       "available": true,
       "mapFile": "jeju.pmtiles",
-      "size": 6739812,
-      "sha256": "e067e29d498b6837a50f4da5141aeefe5c9fe00e9f3bffada311ef2f66b9e69b",
+      "size": 7428312,
+      "sha256": "615a0c75881b975ddefab7968340aae9f5bceaf5742e761c3fc187d396b68435",
       "routing": {
         "file": "jeju.routing.v10.sqlite",
         "size": 64782336,
@@ -523,7 +539,8 @@
         "downloadSize": 24692908,
         "downloadSHA256": "b90f4753d97d1c1b16225b0bf4a1112d00b9c518c94e7cecf629ef740a75af8d",
         "compression": "lzfse"
-      }
+      },
+      "mapVersion": "v0.1.5-poi-identity-20260827"
     }
   ]
 }

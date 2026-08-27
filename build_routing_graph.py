@@ -379,7 +379,7 @@ def main() -> None:
                                   sequence INTEGER NOT NULL,
                                   PRIMARY KEY(node_id, route_id)) WITHOUT ROWID;
     """)
-    database.execute("INSERT INTO metadata VALUES('schemaVersion','4')")
+    database.execute("INSERT INTO metadata VALUES('schemaVersion','5')")
     database.execute("INSERT INTO metadata VALUES('kind',?)", ("compact" if args.compact else "detail",))
     pending_nodes: list[tuple[int, float, float, int]] = []
     pending_edges: list[tuple[int, int, float, float, int, int, int, int]] = []
@@ -399,9 +399,13 @@ def main() -> None:
                 if node_tags.get("highway") == "crossing" or node_tags.get("crossing"):
                     crossing_tags_by_node[node_id] = node_tags
                 amenity = node_tags.get("amenity")
-                if amenity in {"drinking_water", "toilets"}:
+                shop = node_tags.get("shop")
+                facility_kind = amenity if amenity in {"drinking_water", "toilets"} else (
+                    shop if shop in {"convenience", "supermarket"} else None
+                )
+                if facility_kind:
                     pending_amenities.append(
-                        (node_id, amenity, node_tags.get("name"), lat, lon)
+                        (node_id, facility_kind, node_tags.get("name"), lat, lon)
                     )
                 cell = (int(lat / grid_size), int(lon / grid_size))
                 for latitude_cell in range(cell[0] - 1, cell[0] + 2):

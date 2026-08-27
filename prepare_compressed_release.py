@@ -45,6 +45,11 @@ def main() -> None:
     parser.add_argument("--manifest", type=Path, default=Path("manifest.json"))
     parser.add_argument("--build", type=Path, default=Path("build"))
     parser.add_argument("--output", type=Path, default=Path("build/compressed-release"))
+    parser.add_argument(
+        "--update-manifest",
+        action="store_true",
+        help="Write refreshed download metadata back to --manifest after staging.",
+    )
     args = parser.parse_args()
 
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
@@ -62,6 +67,11 @@ def main() -> None:
     output_manifest.write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
+    if args.update_manifest:
+        args.manifest.write_text(
+            json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
     original = sum(asset["size"] for asset in assets)
     transferred = sum(asset["downloadSize"] for asset in assets)
     print(f"assets={len(assets)} original={original} transfer={transferred} ratio={transferred/original:.3f}")

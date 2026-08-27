@@ -7,8 +7,10 @@ repo="suhyeonii/islo-offline-maps"
 # checksums after every asset upload has completed.
 release="${ISLO_MAP_RELEASE:-v0.1.0}"
 manifest_release="${ISLO_MAP_MANIFEST_RELEASE:-v0.1.2-individual-poi-points}"
+publish="${ISLO_PUBLISH:-1}"
 source_pbf="build/south-korea-latest.osm.pbf"
 tilemaker_config="/workspace/tilemaker-islo-config.json"
+tilemaker_process="/workspace/tilemaker-islo-process.lua"
 
 regions=(
   "seoul|126.76,37.41,127.20,37.72"
@@ -63,17 +65,22 @@ for entry in "${regions[@]}"; do
       [[ -f "$mbtiles" ]] && merge=(--merge)
       docker run --rm -v "$PWD/build:/data" -v "$PWD:/workspace:ro" ghcr.io/systemed/tilemaker:master \
         "/data/${id}-${part_number}.osm.pbf" --output "/data/${id}.mbtiles" \
-        --bbox "$quadrant" --config "$tilemaker_config" "${merge[@]}" --quiet
+        --bbox "$quadrant" --config "$tilemaker_config" --process "$tilemaker_process" \
+        "${merge[@]}" --quiet
       rm -f "$part_pbf"
     done
     pmtiles convert "$mbtiles" "$tiles"
     rm -f "$mbtiles"
   fi
-  gh release upload "$release" "$tiles" --repo "$repo" --clobber
+  if [[ "$publish" == "1" ]]; then
+    gh release upload "$release" "$tiles" --repo "$repo" --clobber
+  fi
   rm -f "$pbf"
 done
 
 # Publish the manifest only after all replacement assets are uploaded, so an
 # app never receives a checksum for an asset that is not available yet.
-python3 refresh_map_manifest.py --release "$manifest_release" --asset-release "$release"
-gh release upload "$release" manifest.json --repo "$repo" --clobber
+if [[ "$publish" == "1" ]]; then
+  python3 refresh_map_manifest.py --release "$manifest_release" --asset-release "$release"
+  gh release upload "$release" manifest.json --repo "$repo" --clobber
+fi

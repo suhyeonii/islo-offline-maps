@@ -26,8 +26,25 @@ for entry in "${regions[@]}"; do
     nwr/name \
     nwr/amenity=toilets \
     nwr/amenity=drinking_water \
+    nwr/amenity=cafe \
     nwr/amenity=bicycle_parking \
+    nwr/amenity=bicycle_repair_station \
     nwr/shop=bicycle \
+    nwr/shop=convenience \
+    nwr/shop=supermarket \
+    nwr/shop=grocery \
+    nwr/shop=market \
+    nwr/shop=greengrocer \
+    nwr/shop=general \
+    nwr/shop=kiosk \
+    nwr/shop=beverages \
+    nwr/shop=confectionery \
+    nwr/shop=variety_store \
+    nwr/shop=coffee \
+    nwr/shop=tea \
+    nwr/cuisine=coffee_shop \
+    nwr/service:bicycle:repair=yes \
+    nwr/service:bicycle:retail=yes \
     -o "$filtered"
   rm -f "build/${id}.places.v2.sqlite"
   osmium cat "$filtered" -f opl | python3 ./build_place_index.py "build/${id}.places.v2.sqlite"
