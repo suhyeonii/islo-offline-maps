@@ -379,8 +379,9 @@ def main() -> None:
                                   sequence INTEGER NOT NULL,
                                   PRIMARY KEY(node_id, route_id)) WITHOUT ROWID;
     """)
-    database.execute("INSERT INTO metadata VALUES('schemaVersion','5')")
+    database.execute("INSERT INTO metadata VALUES('schemaVersion','6')")
     database.execute("INSERT INTO metadata VALUES('kind',?)", ("compact" if args.compact else "detail",))
+    database.execute("INSERT INTO metadata VALUES('routingIndex','bidirectional-v1')")
     pending_nodes: list[tuple[int, float, float, int]] = []
     pending_edges: list[tuple[int, int, float, float, int, int, int, int]] = []
     pending_amenities: list[tuple[int, str, str | None, float, float]] = []
@@ -506,6 +507,10 @@ def main() -> None:
     database.executescript("""
       CREATE INDEX nodes_lat ON nodes(lat);
       CREATE INDEX edges_cycleway ON edges(is_cycleway,src);
+      -- v11 라우터는 목적지 쪽에서도 동시에 탐색합니다. WITHOUT ROWID의
+      -- 기본 키는 (src,dst)라 역방향 조회에는 사용할 수 없으므로 이
+      -- 인덱스를 패키지 생성 시 만들어 기기에서 전체 간선 스캔을 막습니다.
+      CREATE INDEX edges_destination ON edges(dst,src);
       CREATE INDEX amenities_lat ON amenities(lat);
       ANALYZE;
     """)

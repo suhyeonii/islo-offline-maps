@@ -2,7 +2,7 @@
 set -euo pipefail
 
 source_pbf="build/south-korea-latest.osm.pbf"
-version="${ROUTING_VERSION:-v10}"
+version="${ROUTING_VERSION:-v11}"
 dem_dir="${DEM_DIR:-dem}"
 dem_args=()
 [[ -d "$dem_dir" ]] && dem_args=(--dem-dir "$dem_dir")
@@ -15,10 +15,12 @@ build_graph() {
   local extracted="build/${id}.routing.${version}.osm.pbf"
   local filtered="build/${id}.routing.${version}.filtered.osm.pbf"
   local output="build/${id}.routing.${version}.sqlite"
+  local partial="${output}.partial"
   if [[ -f "$output" ]]; then
     echo "Skipping existing ${output}"
     return
   fi
+  rm -f "$partial"
   if [[ -n "$bbox" ]]; then
     osmium extract --overwrite --strategy complete_ways --bbox "$bbox" -o "$extracted" "$source_pbf"
     source="$extracted"
@@ -31,13 +33,14 @@ build_graph() {
       w/bicycle=designated w/bicycle=official \
       n/amenity=drinking_water n/amenity=toilets -o "$filtered"
     osmium cat "$filtered" -f opl | python3 ./build_routing_graph.py \
-      --compact --official-csv ./official_cycle_routes.csv "${dem_args[@]}" "$output"
+      --compact --official-csv ./official_cycle_routes.csv "${dem_args[@]}" "$partial"
   else
     osmium tags-filter --overwrite "$source" w/highway \
       n/amenity=drinking_water n/amenity=toilets -o "$filtered"
     osmium cat "$filtered" -f opl | python3 ./build_routing_graph.py \
-      --official-csv ./official_cycle_routes.csv "${dem_args[@]}" "$output"
+      --official-csv ./official_cycle_routes.csv "${dem_args[@]}" "$partial"
   fi
+  mv "$partial" "$output"
   rm -f "$extracted" "$filtered"
 }
 
