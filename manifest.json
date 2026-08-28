@@ -1,15 +1,15 @@
 {
   "schemaVersion": 2,
-  "release": "v0.1.7-routing-v14",
-  "generatedAt": "2026-08-28T02:22:15+09:00",
+  "release": "v0.1.8-routing-v15",
+  "generatedAt": "2026-08-28T12:20:31+09:00",
   "baseURL": "https://github.com/suhyeonii/islo-offline-maps/releases/download/v0.1.0",
   "nationwideRouting": {
-    "file": "korea.routing.v14.sqlite",
-    "size": 1378562048,
-    "sha256": "bf0fff6489d8b499bc888e0a8a5e430bcdb869a677baa4fca0dfdeb174240e23",
-    "downloadFile": "korea.routing.v14.sqlite.lzfse",
-    "downloadSize": 556507190,
-    "downloadSHA256": "901c1fa7324ffb2ac17c5eb7a812901972926c3147ffed943c71e123e9e709c5",
+    "file": "korea.routing.v15.sqlite",
+    "size": 1378881536,
+    "sha256": "456d4207226f191c41861d5c0c88a9b97e9d7defb9936e90a888c21948319f8a",
+    "downloadFile": "korea.routing.v15.sqlite.lzfse",
+    "downloadSize": 556624444,
+    "downloadSHA256": "b22779c9c1d3501dc7b2451cd4b24350e08c350cb67ef863604192877c3dbe40",
     "compression": "lzfse"
   },
   "searchIndexes": {

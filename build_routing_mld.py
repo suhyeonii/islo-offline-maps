@@ -15,6 +15,32 @@ PROFILE_BALANCED = 1
 PROFILE_SHORTEST = 2
 
 
+class DisjointSet:
+    def __init__(self, nodes: set[int]) -> None:
+        self.parent = {node: node for node in nodes}
+        self.rank = {node: 0 for node in nodes}
+
+    def find(self, node: int) -> int:
+        parent = self.parent[node]
+        while parent != self.parent[parent]:
+            parent = self.parent[parent]
+        while node != parent:
+            following = self.parent[node]
+            self.parent[node] = parent
+            node = following
+        return parent
+
+    def union(self, left: int, right: int) -> None:
+        left_root, right_root = self.find(left), self.find(right)
+        if left_root == right_root:
+            return
+        if self.rank[left_root] < self.rank[right_root]:
+            left_root, right_root = right_root, left_root
+        self.parent[right_root] = left_root
+        if self.rank[left_root] == self.rank[right_root]:
+            self.rank[left_root] += 1
+
+
 def edge_cost(row: tuple, profile: int) -> float:
     _, _, meters, stored, cycleway, dismount = row
     if profile == PROFILE_BICYCLE:
@@ -225,17 +251,88 @@ def build_level_one(database: sqlite3.Connection, commit_every: int) -> None:
     database.commit()
 
 
+def build_component_portals(database: sqlite3.Connection) -> None:
+    """Index disconnected components of the routable level-1 overlay.
+
+    Endpoint access searches select portals by distance and local cost. Without
+    this index they can choose portals on disconnected islands, forcing the app
+    to abandon MLD and expand the nationwide base graph. Components are weakly
+    connected deliberately: one-way direction is still validated by the actual
+    MLD search, while truly disconnected portal families are rejected early.
+    """
+    portals = {
+        row[0] for row in database.execute(
+            "SELECT node_id FROM hierarchy_level1_portals"
+        )
+    }
+    components = DisjointSet(portals)
+    for source, destination in database.execute(
+        "SELECT src,dst FROM hierarchy_shortcuts WHERE level=1"
+    ):
+        if source in portals and destination in portals:
+            components.union(source, destination)
+
+    # Preserve real directed roads that cross a level-1 boundary. MLD traverses
+    # these between shortcuts, so they are part of the same weak component.
+    for source, destination in database.execute(
+        """
+        SELECT e.src,e.dst
+        FROM edges e
+        JOIN hierarchy_level1_portals p ON p.node_id=e.src
+        JOIN hierarchy_level1_portals q ON q.node_id=e.dst
+        WHERE p.level1_cell!=q.level1_cell
+        """
+    ):
+        components.union(source, destination)
+
+    roots = sorted({components.find(node) for node in portals})
+    identifiers = {root: index + 1 for index, root in enumerate(roots)}
+    database.execute("DROP TABLE IF EXISTS hierarchy_component_portals")
+    database.execute(
+        """
+        CREATE TABLE hierarchy_component_portals(
+            node_id INTEGER PRIMARY KEY,
+            component_id INTEGER NOT NULL
+        ) WITHOUT ROWID
+        """
+    )
+    database.executemany(
+        "INSERT INTO hierarchy_component_portals VALUES(?,?)",
+        ((node, identifiers[components.find(node)]) for node in portals),
+    )
+    database.execute(
+        "CREATE INDEX hierarchy_component_portals_component "
+        "ON hierarchy_component_portals(component_id,node_id)"
+    )
+    database.execute(
+        "INSERT OR REPLACE INTO metadata VALUES('mldPortalComponents',?)",
+        (str(len(identifiers)),),
+    )
+    database.commit()
+    print(
+        f"mld.components portals={len(portals)} components={len(identifiers)}",
+        flush=True,
+    )
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("database")
     parser.add_argument("--commit-every", type=int, default=20)
+    parser.add_argument(
+        "--components-only",
+        action="store_true",
+        help="Build the component portal index from existing MLD shortcuts.",
+    )
     args = parser.parse_args()
     database = sqlite3.connect(args.database)
     try:
         database.execute("PRAGMA journal_mode=WAL")
         database.execute("PRAGMA synchronous=NORMAL")
-        build_level_zero(database, max(1, args.commit_every))
-        build_level_one(database, max(1, args.commit_every))
+        if not args.components_only:
+            build_level_zero(database, max(1, args.commit_every))
+            build_level_one(database, max(1, args.commit_every))
+        build_component_portals(database)
         database.execute("ANALYZE hierarchy_shortcuts")
         database.commit()
     finally:

@@ -33,13 +33,20 @@ def main() -> None:
         action="store_true",
         help="Refresh only the nationwide routing asset and preserve regional versions.",
     )
+    parser.add_argument(
+        "--nationwide-version",
+        default=VERSION,
+        help="Nationwide routing filename version (for example v15).",
+    )
     args = parser.parse_args()
     manifest_path = ROOT / "manifest.json"
     manifest = json.loads(manifest_path.read_text())
     if args.release:
         manifest["release"] = args.release
     manifest["generatedAt"] = datetime.now(timezone(timedelta(hours=9))).replace(microsecond=0).isoformat()
-    manifest["nationwideRouting"] = asset(f"korea.routing.{VERSION}.sqlite")
+    manifest["nationwideRouting"] = asset(
+        f"korea.routing.{args.nationwide_version}.sqlite"
+    )
     if args.nationwide_only:
         manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")
         return
