@@ -1,16 +1,16 @@
 {
   "schemaVersion": 2,
-  "release": "v0.1.19-cch-20260901",
-  "generatedAt": "2026-09-01T02:35:00+09:00",
+  "release": "v0.1.20-cch-20260901",
+  "generatedAt": "2026-09-01T02:52:00+09:00",
   "baseURL": "https://github.com/suhyeonii/islo-offline-maps/releases/download/v0.1.0",
   "nationwideCCH": {
-    "version": "korea-cch-v8",
-    "installedSize": 1059440583,
-    "transferSize": 1059450600,
+    "version": "korea-cch-v8.1",
+    "installedSize": 1070060066,
+    "transferSize": 1070070413,
     "manifest": {
       "file": "korea-cch-v8.manifest.json",
-      "size": 10017,
-      "sha256": "ea0af0fc1c8d99a494b8fc293fea9d2e36451ce554adbea19fc7867ee422c69c"
+      "size": 10347,
+      "sha256": "75a56b0f6e57ef2ba72807f982364768ef968856fe4a9ed05c0a99843abba52a"
     }
   },
   "searchIndexes": {
