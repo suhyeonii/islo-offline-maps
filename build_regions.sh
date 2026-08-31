@@ -7,6 +7,7 @@ repo="suhyeonii/islo-offline-maps"
 # checksums after every asset upload has completed.
 release="${ISLO_MAP_RELEASE:-v0.1.0}"
 manifest_release="${ISLO_MAP_MANIFEST_RELEASE:-v0.1.2-individual-poi-points}"
+snapshot_version="${ISLO_SNAPSHOT_VERSION:-20260827}"
 publish="${ISLO_PUBLISH:-1}"
 source_pbf="build/south-korea-latest.osm.pbf"
 tilemaker_config="/workspace/tilemaker-islo-config.json"
@@ -31,13 +32,14 @@ regions=(
   "gyeongnam|127.55,34.55,129.25,35.95"
   "jeju|126.05,33.05,126.98,33.62"
 )
-uploaded="$(gh release view "$release" --repo "$repo" --json assets --jq '.assets[].name')"
-
 for entry in "${regions[@]}"; do
   id="${entry%%|*}"
   bbox="${entry#*|}"
   pbf="build/${id}.osm.pbf"
-  tiles="build/${id}.pmtiles"
+  # Immutable filename: never replace the bytes referenced by the currently
+  # published manifest. The manifest switches to this snapshot only after all
+  # regions have uploaded and passed checksum verification.
+  tiles="build/${id}.map.${snapshot_version}.pmtiles"
   echo "Building ${id}"
   # POIs must remain individual Point features. Always rebuild and replace the
   # PMTiles asset; stale local or release assets may still contain MultiPoint.
@@ -81,6 +83,7 @@ done
 # Publish the manifest only after all replacement assets are uploaded, so an
 # app never receives a checksum for an asset that is not available yet.
 if [[ "$publish" == "1" ]]; then
-  python3 refresh_map_manifest.py --release "$manifest_release" --asset-release "$release"
+  python3 refresh_map_manifest.py --release "$manifest_release" --asset-release "$release" \
+    --filename-version "$snapshot_version"
   gh release upload "$release" manifest.json --repo "$repo" --clobber
 fi

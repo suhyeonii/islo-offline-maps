@@ -3,3 +3,8 @@ build/
 *.osm.pbf
 __pycache__/
 dem/
+cch/build_cch_prototype
+cch/extract_bicycle_graph
+cch/benchmark_cch_arrays
+cch/build_geometry_index
+cch/audit_components

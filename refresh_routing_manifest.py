@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Refresh every routing asset in manifest.json from a generated version."""
+"""Refresh one optional regional SQLite routing asset in manifest.json.
+
+Nationwide routing is CCH-only. This command intentionally cannot add the
+removed nationwide SQLite asset back to a release manifest.
+"""
 
 import hashlib
 import json
@@ -10,7 +14,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).parent
 BUILD = ROOT / "build"
-VERSION = "v14"
+VERSION = "v24"
 
 
 def asset(name: str) -> dict[str, object]:
@@ -22,6 +26,15 @@ def asset(name: str) -> dict[str, object]:
     }
 
 
+def preserve_transport(previous: dict[str, object] | None, refreshed: dict[str, object]) -> dict[str, object]:
+    """Never carry compressed metadata across different immutable source files."""
+    if previous and previous.get("file") == refreshed.get("file"):
+        for key in ("downloadFile", "downloadSize", "downloadSHA256", "compression"):
+            if key in previous:
+                refreshed[key] = previous[key]
+    return refreshed
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -29,14 +42,14 @@ def main() -> None:
         help="Logical data release to publish. Omit to preserve the current manifest release.",
     )
     parser.add_argument(
-        "--nationwide-only",
-        action="store_true",
-        help="Refresh only the nationwide routing asset and preserve regional versions.",
+        "--region",
+        required=True,
+        help="Refresh this regional routing asset and preserve every other asset.",
     )
     parser.add_argument(
-        "--nationwide-version",
+        "--regional-version",
         default=VERSION,
-        help="Nationwide routing filename version (for example v15).",
+        help="Regional routing filename version used with --region.",
     )
     args = parser.parse_args()
     manifest_path = ROOT / "manifest.json"
@@ -44,14 +57,17 @@ def main() -> None:
     if args.release:
         manifest["release"] = args.release
     manifest["generatedAt"] = datetime.now(timezone(timedelta(hours=9))).replace(microsecond=0).isoformat()
-    manifest["nationwideRouting"] = asset(
-        f"korea.routing.{args.nationwide_version}.sqlite"
-    )
-    if args.nationwide_only:
-        manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")
-        return
+    matched = False
     for region in manifest["regions"]:
-        region["routing"] = asset(f"{region['id']}.routing.{VERSION}.sqlite")
+        if region["id"] == args.region:
+            region["routing"] = preserve_transport(
+                region.get("routing"),
+                asset(f"{args.region}.routing.{args.regional_version}.sqlite"),
+            )
+            matched = True
+            break
+    if not matched:
+        raise ValueError(f"Unknown region: {args.region}")
     manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")
 
 

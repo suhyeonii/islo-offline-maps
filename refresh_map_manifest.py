@@ -28,10 +28,16 @@ def main() -> None:
     )
     parser.add_argument("--build-dir", type=Path, default=ROOT / "build")
     parser.add_argument("--manifest", type=Path, default=ROOT / "manifest.json")
+    parser.add_argument(
+        "--filename-version",
+        help="Use immutable <region>.map.<version>.pmtiles asset names.",
+    )
     args = parser.parse_args()
 
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
     for region in manifest["regions"]:
+        if args.filename_version:
+            region["mapFile"] = f"{region['id']}.map.{args.filename_version}.pmtiles"
         path = args.build_dir / region["mapFile"]
         if not path.is_file():
             raise FileNotFoundError(f"Missing rebuilt map: {path}")

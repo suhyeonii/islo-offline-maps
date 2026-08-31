@@ -2,6 +2,7 @@
 set -euo pipefail
 
 source_pbf="build/south-korea-latest.osm.pbf"
+place_version="${PLACE_VERSION:-v2}"
 regions=(
   "seoul|126.76,37.41,127.20,37.72" "busan|128.75,34.95,129.32,35.39"
   "daegu|128.35,35.55,129.02,36.02" "incheon|126.20,37.30,126.82,37.72"
@@ -46,7 +47,8 @@ for entry in "${regions[@]}"; do
     nwr/service:bicycle:repair=yes \
     nwr/service:bicycle:retail=yes \
     -o "$filtered"
-  rm -f "build/${id}.places.v2.sqlite"
-  osmium cat "$filtered" -f opl | python3 ./build_place_index.py "build/${id}.places.v2.sqlite"
+  output="build/${id}.places.${place_version}.sqlite"
+  rm -f "$output"
+  osmium cat "$filtered" -f opl | python3 ./build_place_index.py "$output"
   rm -f "$extracted" "$filtered"
 done

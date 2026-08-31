@@ -144,8 +144,8 @@ UNSUITABLE_CITY_BICYCLE_SURFACES = {
 }
 
 
-def bicycle_profile(values: dict[str, str], compact: bool) -> tuple[float, int] | None:
-    """Return an OSRM-inspired cost multiplier and dedicated-cycleway flag.
+def bicycle_profile(values: dict[str, str], compact: bool) -> tuple[float, int, int] | None:
+    """Return cost, bicycle-friendly flag, and dedicated-cycleway flag.
 
     This intentionally stays a compact, auditable policy instead of embedding
     libosrm. Access tags are resolved before road-class preferences, while
@@ -175,15 +175,25 @@ def bicycle_profile(values: dict[str, str], compact: bool) -> tuple[float, int] 
         and highway in {"footway", "pedestrian", "path", "service"}
         and access != "private"
     )
+    # `motorroad=yes` denotes a road governed by motorway-like access rules.
+    # Do not infer bicycle access from its physical shoulder: a mapper must
+    # explicitly remove this tag before it can be considered routable.
+    if values.get("motorroad") == "yes":
+        return None
     if (
         (bicycle in FORBIDDEN_ACCESS and not forced_dismount_bridge and not walkable_dismount)
         or (access in FORBIDDEN_ACCESS and not bicycle_allowed and not pedestrian_connector)
         or (vehicle in FORBIDDEN_ACCESS and not bicycle_allowed and not pedestrian_connector)
-        or highway in {"motorway", "motorway_link", "steps"}
+        or highway in {"motorway", "motorway_link"}
     ):
         return None
+    if highway == "steps":
+        # 계단은 자전거 주행 경로에서 제외합니다. 그래프 연결성을 보존해
+        # 건물·공원처럼 다른 접근이 없는 목적지에만 최후 수단으로 남기되,
+        # 어떤 합리적인 자전거 우회로도 이기지 못할 비용을 부여합니다.
+        return (500.0, 0, 0) if foot not in FORBIDDEN_ACCESS and access != "private" else None
     if values.get("route") == "ferry":
-        return (1.8, 0) if bicycle_allowed else None
+        return (1.8, 0, 0) if bicycle_allowed else None
     if highway in {"footway", "pedestrian"}:
         # Most generic footways are sidewalks, so they must never become a normal
         # bicycle choice. Some parks, riverside entrances and public facilities,
@@ -192,15 +202,15 @@ def bicycle_profile(values: dict[str, str], compact: bool) -> tuple[float, int] 
         # connector while continuing to exclude stairs, restricted access and
         # unsuitable/mountain-like surfaces above.
         if bicycle in {"yes", "designated", "official"}:
-            return (0.72 if bicycle == "yes" else 0.52, 1)
+            return (0.72 if bicycle == "yes" else 0.52, 1, 0)
         if values.get("sac_scale") or surface in UNSUITABLE_CITY_BICYCLE_SURFACES:
             return None
-        return (3.8, 0)
+        return (3.8, 0, 0)
     if forced_dismount_bridge:
         # Do not ever treat a bicycle-prohibited bridge as a riding route. It is
         # retained solely as a costly push-bike fallback when it is the only
         # mapped way to an otherwise isolated public destination.
-        return (8.0, 0)
+        return (8.0, 0, 0)
     if highway == "path":
         is_hiking_path = (
             bool(values.get("sac_scale"))
@@ -225,15 +235,31 @@ def bicycle_profile(values: dict[str, str], compact: bool) -> tuple[float, int] 
     cycleway = values.get("cycleway", "")
     cycleway_left = values.get("cycleway:left", "")
     cycleway_right = values.get("cycleway:right", "")
-    facility_values = {cycleway, cycleway_left, cycleway_right}
+    cycleway_both = values.get("cycleway:both", "")
+    facility_values = {cycleway, cycleway_left, cycleway_right, cycleway_both}
     has_protected_facility = bool(facility_values & {"track", "separate"})
+    has_bicycle_shoulder = "shoulder" in facility_values
     has_cycle_lane = bool(facility_values & {"lane", "shared_lane", "share_busway"})
-    dedicated = (
-        highway == "cycleway"
+    # A generic shoulder does not prove that riding is legal. Only reward it
+    # when OSM also explicitly permits cycling; cycleway=shoulder above is a
+    # mapped bicycle facility and is handled as protected infrastructure.
+    has_permitted_shoulder = (
+        bicycle_allowed
+        and values.get("shoulder", "") in {"yes", "left", "right", "both"}
+    )
+    # Only a separately mapped cycleway (or an explicit bicycle road) is a
+    # dedicated bicycle road. `bicycle=designated`, cycle lanes, shoulders and
+    # a `cycleway=track` tag on a vehicle road remain bicycle-friendly: coloring
+    # that vehicle-road geometry as bicycle-only would be false.
+    is_dedicated_cycleway = highway == "cycleway" or values.get("bicycle_road") == "yes"
+    is_bicycle_friendly = (
+        is_dedicated_cycleway
         or bicycle in {"designated", "official"}
         or has_protected_facility
+        or has_bicycle_shoulder
+        or has_cycle_lane
     )
-    if compact and not dedicated and not pedestrian_connector and highway not in {
+    if compact and not is_bicycle_friendly and not pedestrian_connector and highway not in {
         "trunk", "primary", "secondary", "tertiary", "track", "path"
     }:
         return None
@@ -246,10 +272,20 @@ def bicycle_profile(values: dict[str, str], compact: bool) -> tuple[float, int] 
     }.get(highway)
     if base is None:
         return None
-    if dedicated:
-        base = min(base, 0.48)
+    if is_dedicated_cycleway:
+        # A physically independent cycleway is the safest predictable choice.
+        # Give it a stronger reward than painted lanes/designated vehicle roads.
+        base = min(base, 0.34)
+    elif has_protected_facility:
+        base = min(base, 0.52)
+    elif bicycle in {"designated", "official"}:
+        base = min(base, 0.60)
+    elif has_bicycle_shoulder:
+        base *= 0.72
     elif has_cycle_lane:
         base *= 0.78
+    elif has_permitted_shoulder:
+        base *= 0.88
 
     smoothness = values.get("smoothness", "")
     if surface in {"cobblestone", "cobblestone:flattened", "gravel", "pebblestone"}:
@@ -270,7 +306,7 @@ def bicycle_profile(values: dict[str, str], compact: bool) -> tuple[float, int] 
     # push-bike connector and must never compete with a rideable road.
     if pedestrian_connector and not bicycle_allowed:
         base = max(base, 4.2)
-    return base, int(dedicated)
+    return base, int(is_bicycle_friendly), int(is_dedicated_cycleway)
 
 
 def penalty(values: dict[str, str], compact: bool) -> float | None:
@@ -325,9 +361,16 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("output")
     parser.add_argument("--compact", action="store_true")
+    parser.add_argument(
+        "--cch-input",
+        action="store_true",
+        help="Build the full routable base graph for CCH mmap extraction",
+    )
     parser.add_argument("--official-csv")
     parser.add_argument("--dem-dir", help="Directory containing SRTM .hgt / .hgt.zip files")
     args = parser.parse_args()
+    if args.compact and args.cch_input:
+        parser.error("--compact and --cch-input are mutually exclusive")
 
     elevation_provider = ElevationProvider(args.dem_dir)
 
@@ -368,7 +411,12 @@ def main() -> None:
       CREATE TABLE edges(src INTEGER NOT NULL, dst INTEGER NOT NULL,
                          meters REAL NOT NULL, cost REAL NOT NULL,
                          is_cycleway INTEGER NOT NULL DEFAULT 0,
+                         is_dedicated_cycleway INTEGER NOT NULL DEFAULT 0,
                          is_dismount INTEGER NOT NULL DEFAULT 0,
+                         interruption_kind INTEGER NOT NULL DEFAULT 0,
+                         interruption_name TEXT,
+                         is_bridge INTEGER NOT NULL DEFAULT 0,
+                         bridge_name TEXT,
                          crossing_wait_seconds INTEGER NOT NULL DEFAULT 0,
                          is_roundabout INTEGER NOT NULL DEFAULT 0,
                          PRIMARY KEY(src, dst)) WITHOUT ROWID;
@@ -378,34 +426,17 @@ def main() -> None:
       CREATE TABLE official_nodes(node_id INTEGER NOT NULL, route_id INTEGER NOT NULL,
                                   sequence INTEGER NOT NULL,
                                   PRIMARY KEY(node_id, route_id)) WITHOUT ROWID;
-      CREATE TABLE hierarchy_portals(
-          node_id INTEGER PRIMARY KEY,
-          level0_cell INTEGER NOT NULL,
-          level1_cell INTEGER NOT NULL
-      ) WITHOUT ROWID;
-      CREATE TABLE hierarchy_shortcuts(
-          level INTEGER NOT NULL,
-          cell_id INTEGER NOT NULL,
-          profile INTEGER NOT NULL,
-          src INTEGER NOT NULL,
-          dst INTEGER NOT NULL,
-          cost REAL NOT NULL,
-          meters REAL NOT NULL,
-          PRIMARY KEY(level,cell_id,profile,src,dst)
-      ) WITHOUT ROWID;
-      CREATE TABLE hierarchy_level1_portals(
-          node_id INTEGER PRIMARY KEY,
-          level1_cell INTEGER NOT NULL
-      ) WITHOUT ROWID;
     """)
-    database.execute("INSERT INTO metadata VALUES('schemaVersion','6')")
-    database.execute("INSERT INTO metadata VALUES('kind',?)", ("compact" if args.compact else "detail",))
+    database.execute("INSERT INTO metadata VALUES('schemaVersion','13')")
+    graph_kind = "cch-input" if args.cch_input else ("compact" if args.compact else "detail")
+    database.execute("INSERT INTO metadata VALUES('kind',?)", (graph_kind,))
     database.execute("INSERT INTO metadata VALUES('routingIndex','bidirectional-v1')")
-    database.execute("INSERT INTO metadata VALUES('routingHierarchy','mld-v2')")
+    database.execute("INSERT INTO metadata VALUES('routingHierarchy','none')")
     pending_nodes: list[tuple[int, float, float, int]] = []
-    pending_edges: list[tuple[int, int, float, float, int, int, int, int]] = []
+    pending_edges: list[tuple] = []
     pending_amenities: list[tuple[int, str, str | None, float, float]] = []
     crossing_tags_by_node: dict[int, dict[str, str]] = {}
+    interruption_by_node: dict[int, tuple[int, str | None]] = {}
     did_flush_nodes = False
 
     for line in sys.stdin:
@@ -419,6 +450,11 @@ def main() -> None:
                 node_tags = tags(raw_tags)
                 if node_tags.get("highway") == "crossing" or node_tags.get("crossing"):
                     crossing_tags_by_node[node_id] = node_tags
+                if node_tags.get("highway") == "elevator" or node_tags.get("elevator") == "yes":
+                    node_name = node_tags.get("name") or node_tags.get("name:ko")
+                    if node_name in {"엘리베이터", "승강기", "elevator", "Elevator"}:
+                        node_name = None
+                    interruption_by_node[node_id] = (3, node_name)
                 amenity = node_tags.get("amenity")
                 shop = node_tags.get("shop")
                 facility_kind = amenity if amenity in {"drinking_water", "toilets"} else (
@@ -456,9 +492,11 @@ def main() -> None:
             profile = bicycle_profile(values, args.compact)
             if profile is None:
                 continue
-            weight, is_cycleway = profile
+            weight, is_cycleway, is_dedicated_cycleway = profile
             is_dismount = int(
-                values.get("bicycle") == "dismount"
+                values.get("highway") == "steps"
+                or values.get("highway") == "elevator"
+                or values.get("bicycle") == "dismount"
                 or (
                     values.get("highway") in {"footway", "pedestrian", "path"}
                     and values.get("bicycle") not in {"yes", "designated", "official"}
@@ -510,22 +548,65 @@ def main() -> None:
                 edge_source, edge_destination = source, destination
                 if reverse:
                     edge_source, edge_destination = destination, source
+                interruption_kind = (
+                    2 if values.get("highway") == "steps"
+                    else 3 if values.get("highway") == "elevator"
+                    or source in interruption_by_node or destination in interruption_by_node
+                    else 1 if is_dismount else 0
+                )
+                interruption_name = values.get("name") or values.get("name:ko")
+                if not interruption_name:
+                    interruption_name = (
+                        interruption_by_node.get(source, (0, None))[1]
+                        or interruption_by_node.get(destination, (0, None))[1]
+                    )
+                if interruption_name in {"엘리베이터", "승강기", "계단", "elevator", "Elevator", "steps"}:
+                    interruption_name = None
+                bridge_name = (
+                    values.get("bridge:name:ko") or values.get("bridge:name")
+                    or values.get("name:ko") or values.get("name")
+                    if values.get("bridge") == "yes" else None
+                )
                 pending_edges.append(
-                    (edge_source, edge_destination, meters, meters * weight, is_cycleway, is_dismount,
+                    (edge_source, edge_destination, meters, meters * weight, is_cycleway, is_dedicated_cycleway, is_dismount, interruption_kind, interruption_name, int(values.get("bridge") == "yes"), bridge_name,
                      reverse_crossing_wait if reverse else forward_crossing_wait, int(is_roundabout))
                 )
                 if not oneway and not reverse:
-                    pending_edges.append((destination, source, meters, meters * weight, is_cycleway, is_dismount,
+                    pending_edges.append((destination, source, meters, meters * weight, is_cycleway, is_dedicated_cycleway, is_dismount, interruption_kind, interruption_name, int(values.get("bridge") == "yes"), bridge_name,
                                           reverse_crossing_wait, int(is_roundabout)))
                 if len(pending_edges) >= 100_000:
-                    database.executemany("INSERT OR REPLACE INTO edges VALUES(?,?,?,?,?,?,?,?)", pending_edges)
+                    database.executemany("INSERT OR REPLACE INTO edges VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)", pending_edges)
                     pending_edges.clear()
 
     database.executemany("INSERT OR IGNORE INTO nodes VALUES(?,?,?,?)", pending_nodes)
-    database.executemany("INSERT OR REPLACE INTO edges VALUES(?,?,?,?,?,?,?,?)", pending_edges)
+    database.executemany("INSERT OR REPLACE INTO edges VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)", pending_edges)
     database.executemany("INSERT OR REPLACE INTO amenities VALUES(?,?,?,?,?)", pending_amenities)
+    if args.cch_input:
+        # CCH owns its node order, adjacency and spatial index. Reverse-edge
+        # SQLite indexes would duplicate data discarded after mmap extraction.
+        if args.official_csv:
+            database.executemany("INSERT INTO official_routes VALUES(?,?)", route_names.items())
+            official_nodes = [
+                (official_nearest[index][1], point[1], point[0])
+                for index, point in enumerate(official_points) if index in official_nearest
+            ]
+            database.executemany(
+                "INSERT OR IGNORE INTO official_nodes VALUES(?,?,?)", official_nodes
+            )
+            database.execute("""
+              UPDATE edges SET cost=cost*0.45
+              WHERE src IN (SELECT node_id FROM official_nodes)
+                AND dst IN (SELECT node_id FROM official_nodes)
+            """)
+        database.execute("INSERT OR REPLACE INTO metadata VALUES('routingHierarchy','cch-input-v1')")
+        database.commit()
+        database.close()
+        return
     database.executescript("""
-      CREATE INDEX nodes_lat ON nodes(lat);
+      -- Endpoint snapping constrains latitude and longitude together. A
+      -- composite index prevents a dense nationwide latitude band from being
+      -- scanned and filtered by longitude on every route request.
+      CREATE INDEX nodes_lat_lon ON nodes(lat,lon);
       CREATE INDEX edges_cycleway ON edges(is_cycleway,src);
       -- v11 라우터는 목적지 쪽에서도 동시에 탐색합니다. WITHOUT ROWID의
       -- 기본 키는 (src,dst)라 역방향 조회에는 사용할 수 없으므로 이
@@ -534,45 +615,6 @@ def main() -> None:
       CREATE INDEX amenities_lat ON amenities(lat);
       ANALYZE;
     """)
-    # MLD level 0 uses roughly 5 km cells and level 1 roughly 25 km cells.
-    # Only nodes whose edge crosses a level-0 boundary become portals; ordinary
-    # geometry nodes are deliberately omitted from this table. Shortcut
-    # generation consumes these stable portal IDs in the next preprocessing
-    # phase without duplicating the nationwide node table.
-    database.execute("""
-      INSERT OR IGNORE INTO hierarchy_portals(node_id,level0_cell,level1_cell)
-      WITH crossing(src,dst) AS (
-        SELECT e.src,e.dst
-        FROM edges e JOIN nodes a ON a.id=e.src JOIN nodes b ON b.id=e.dst
-        WHERE (CAST((a.lat+90.0)*20 AS INTEGER) != CAST((b.lat+90.0)*20 AS INTEGER)
-           OR CAST((a.lon+180.0)*20 AS INTEGER) != CAST((b.lon+180.0)*20 AS INTEGER))
-      ), endpoint(node_id) AS (
-        SELECT src FROM crossing UNION SELECT dst FROM crossing
-      )
-      SELECT p.node_id,
-             CAST((n.lat+90.0)*20 AS INTEGER)*10000 + CAST((n.lon+180.0)*20 AS INTEGER),
-             CAST((n.lat+90.0)*4 AS INTEGER)*10000 + CAST((n.lon+180.0)*4 AS INTEGER)
-      FROM endpoint p JOIN nodes n ON n.id=p.node_id
-    """)
-    database.execute("CREATE INDEX hierarchy_portals_level0 ON hierarchy_portals(level0_cell,node_id)")
-    database.execute("CREATE INDEX hierarchy_portals_level1 ON hierarchy_portals(level1_cell,node_id)")
-    database.execute("""
-      INSERT OR IGNORE INTO hierarchy_level1_portals(node_id,level1_cell)
-      WITH crossing(src,dst) AS (
-        SELECT e.src,e.dst
-        FROM edges e JOIN nodes a ON a.id=e.src JOIN nodes b ON b.id=e.dst
-        WHERE (CAST((a.lat+90.0)*4 AS INTEGER) != CAST((b.lat+90.0)*4 AS INTEGER)
-           OR CAST((a.lon+180.0)*4 AS INTEGER) != CAST((b.lon+180.0)*4 AS INTEGER))
-      ), endpoint(node_id) AS (
-        SELECT src FROM crossing UNION SELECT dst FROM crossing
-      )
-      SELECT p.node_id,
-             CAST((n.lat+90.0)*4 AS INTEGER)*10000 + CAST((n.lon+180.0)*4 AS INTEGER)
-      FROM endpoint p JOIN nodes n ON n.id=p.node_id
-    """)
-    database.execute("CREATE INDEX hierarchy_level1_portals_cell ON hierarchy_level1_portals(level1_cell,node_id)")
-    database.execute("CREATE INDEX hierarchy_shortcuts_source ON hierarchy_shortcuts(level,profile,src)")
-    database.execute("CREATE INDEX hierarchy_shortcuts_destination ON hierarchy_shortcuts(level,profile,dst)")
     if args.official_csv:
         database.executemany("INSERT INTO official_routes VALUES(?,?)", route_names.items())
         official_nodes = [

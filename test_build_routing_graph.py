@@ -1,10 +1,39 @@
 import os
+import sqlite3
 import struct
+import subprocess
+import sys
 import tempfile
 import unittest
 import zipfile
+from pathlib import Path
 
 from build_routing_graph import ElevationProvider, bicycle_profile
+
+
+class RoutingSchemaTests(unittest.TestCase):
+    def test_regional_graph_omits_legacy_hierarchy_tables(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output = Path(temp_dir) / "regional.sqlite"
+            subprocess.run(
+                [sys.executable, str(Path(__file__).with_name("build_routing_graph.py")), str(output)],
+                input="",
+                text=True,
+                check=True,
+            )
+            with sqlite3.connect(output) as database:
+                objects = {
+                    row[0]
+                    for row in database.execute(
+                        "SELECT name FROM sqlite_master WHERE type IN ('table','index')"
+                    )
+                }
+                metadata = dict(database.execute("SELECT key,value FROM metadata"))
+
+            self.assertFalse(any(name.startswith("hierarchy_") for name in objects))
+            self.assertEqual(metadata["routingHierarchy"], "none")
+            self.assertIn("nodes_lat_lon", objects)
+            self.assertIn("edges_destination", objects)
 
 
 class ElevationProviderTests(unittest.TestCase):
@@ -51,6 +80,9 @@ class ElevationProviderTests(unittest.TestCase):
 class BicycleProfileTests(unittest.TestCase):
     def test_rejects_motorways_but_keeps_safe_footway_connectors(self):
         self.assertIsNone(bicycle_profile({"highway": "motorway"}, False))
+        self.assertIsNone(bicycle_profile(
+            {"highway": "primary", "motorroad": "yes", "bicycle": "yes"}, False
+        ))
         connector = bicycle_profile({"highway": "footway"}, False)
         self.assertIsNotNone(connector)
         self.assertGreaterEqual(connector[0], 3.8)
@@ -101,12 +133,48 @@ class BicycleProfileTests(unittest.TestCase):
         self.assertLess(protected[0], lane[0])
         self.assertLess(lane[0], plain[0])
         self.assertEqual(protected[1], 1)
+        self.assertEqual(protected[2], 0)
+
+    def test_dedicated_cycleway_is_distinct_and_gets_strongest_preference(self):
+        dedicated = bicycle_profile({"highway": "cycleway"}, False)
+        protected = bicycle_profile(
+            {"highway": "residential", "cycleway:right": "track"}, False
+        )
+        lane = bicycle_profile(
+            {"highway": "residential", "cycleway:right": "lane"}, False
+        )
+        self.assertEqual(dedicated[1:], (1, 1))
+        self.assertEqual(protected[1:], (1, 0))
+        self.assertEqual(lane[1:], (1, 0))
+        self.assertLess(dedicated[0], protected[0])
+        self.assertLess(protected[0], lane[0])
+
+    def test_bicycle_shoulder_is_friendly_but_generic_shoulder_needs_permission(self):
+        bicycle_shoulder = bicycle_profile(
+            {"highway": "primary", "cycleway": "shoulder"}, False
+        )
+        permitted_shoulder = bicycle_profile(
+            {"highway": "primary", "shoulder": "yes", "bicycle": "yes"}, False
+        )
+        plain = bicycle_profile({"highway": "primary"}, False)
+        self.assertEqual(bicycle_shoulder[1], 1)
+        self.assertEqual(bicycle_shoulder[2], 0)
+        self.assertLess(bicycle_shoulder[0], permitted_shoulder[0])
+        self.assertLess(permitted_shoulder[0], plain[0])
 
     def test_dismount_connector_is_kept_but_penalized(self):
         profile = bicycle_profile(
             {"highway": "path", "surface": "asphalt", "bicycle": "dismount"}, False
         )
         self.assertGreaterEqual(profile[0], 2.4)
+
+    def test_public_steps_are_retained_only_as_last_resort_interruption(self):
+        profile = bicycle_profile({"highway": "steps", "foot": "yes"}, False)
+        self.assertIsNotNone(profile)
+        self.assertGreaterEqual(profile[0], 500)
+        self.assertIsNone(bicycle_profile(
+            {"highway": "steps", "access": "private"}, False
+        ))
 
     def test_public_pedestrian_is_walkable_but_unknown_path_is_not(self):
         pedestrian = bicycle_profile({"highway": "pedestrian"}, False)

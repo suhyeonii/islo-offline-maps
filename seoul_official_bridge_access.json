@@ -1,0 +1,259 @@
+{
+  "schemaVersion": 1,
+  "source": "https://hangang.seoul.go.kr/www/contents/841.do?mid=623",
+  "checkedAt": "2026-08-29",
+  "facilities": [
+    {
+      "id": "seoul-hangang-강서한강공원-가양구름다리-제내지-승강기",
+      "park": "강서한강공원",
+      "name": "가양구름다리 제내지 승강기",
+      "kind": "elevator",
+      "cameraCount": 3,
+      "manager": "강서안내센터",
+      "status": "official_unmatched"
+    },
+    {
+      "id": "seoul-hangang-강서한강공원-가양구름다리-제외지-승강기",
+      "park": "강서한강공원",
+      "name": "가양구름다리 제외지 승강기",
+      "kind": "elevator",
+      "cameraCount": 3,
+      "manager": "강서안내센터",
+      "status": "official_unmatched"
+    },
+    {
+      "id": "seoul-hangang-강서한강공원-가양대교-승강기-인근",
+      "park": "강서한강공원",
+      "name": "가양대교 승강기 인근",
+      "kind": "elevator",
+      "cameraCount": 2,
+      "manager": "강서안내센터",
+      "status": "official_unmatched"
+    },
+    {
+      "id": "seoul-hangang-강서한강공원-가양대교남단-승강기",
+      "park": "강서한강공원",
+      "name": "가양대교남단 승강기",
+      "kind": "elevator",
+      "cameraCount": 3,
+      "manager": "강서안내센터",
+      "status": "official_unmatched"
+    },
+    {
+      "id": "seoul-hangang-난지한강공원-가양대교-승강기",
+      "park": "난지한강공원",
+      "name": "가양대교 승강기",
+      "kind": "elevator",
+      "cameraCount": 4,
+      "manager": "난지안내센터",
+      "status": "official_unmatched"
+    },
+    {
+      "id": "seoul-hangang-뚝섬한강공원-성수구름다리-제내지-승강기",
+      "park": "뚝섬한강공원",
+      "name": "성수구름다리 제내지 승강기",
+      "kind": "elevator",
+      "cameraCount": 3,
+      "manager": "뚝섬안내센터",
+      "status": "official_unmatched"
+    },
+    {
+      "id": "seoul-hangang-뚝섬한강공원-성수구름다리-제외지-승강기",
+      "park": "뚝섬한강공원",
+      "name": "성수구름다리 제외지 승강기",
+      "kind": "elevator",
+      "cameraCount": 3,
+      "manager": "뚝섬안내센터",
+      "status": "official_unmatched"
+    },
+    {
+      "id": "seoul-hangang-뚝섬한강공원-성수대교북단-하류-승강기",
+      "park": "뚝섬한강공원",
+      "name": "성수대교북단 하류 승강기",
+      "kind": "elevator",
+      "cameraCount": 3,
+      "manager": "뚝섬안내센터",
+      "status": "official_unmatched"
+    },
+    {
+      "id": "seoul-hangang-뚝섬한강공원-영동대교북단-승강기",
+      "park": "뚝섬한강공원",
+      "name": "영동대교북단 승강기",
+      "kind": "elevator",
+      "cameraCount": 3,
+      "manager": "뚝섬안내센터",
+      "status": "official_unmatched"
+    },
+    {
+      "id": "seoul-hangang-뚝섬한강공원-올림픽대교북단-승강기",
+      "park": "뚝섬한강공원",
+      "name": "올림픽대교북단 승강기",
+      "kind": "elevator",
+      "cameraCount": 3,
+      "manager": "뚝섬안내센터",
+      "status": "official_unmatched"
+    },
+    {
+      "id": "seoul-hangang-망원한강공원-서강대교-북단-승강기",
+      "park": "망원한강공원",
+      "name": "서강대교 북단 승강기",
+      "kind": "elevator",
+      "cameraCount": 3,
+      "manager": "망원안내센터",
+      "status": "official_unmatched"
+    },
+    {
+      "id": "seoul-hangang-망원한강공원-양화대교-계단",
+      "park": "망원한강공원",
+      "name": "양화대교 계단",
+      "kind": "steps",
+      "cameraCount": 2,
+      "manager": "망원안내센터",
+      "status": "official_unmatched"
+    },
+    {
+      "id": "seoul-hangang-망원한강공원-양화대교북단-승강기",
+      "park": "망원한강공원",
+      "name": "양화대교북단 승강기",
+      "kind": "elevator",
+      "cameraCount": 3,
+      "manager": "망원안내센터",
+      "status": "official_unmatched"
+    },
+    {
+      "id": "seoul-hangang-반포한강공원-동작대교-상류-승강기",
+      "park": "반포한강공원",
+      "name": "동작대교 상류 승강기",
+      "kind": "elevator",
+      "cameraCount": 5,
+      "manager": "반포안내센터",
+      "status": "official_unmatched"
+    },
+    {
+      "id": "seoul-hangang-반포한강공원-동작대교-하류-승강기",
+      "park": "반포한강공원",
+      "name": "동작대교 하류 승강기",
+      "kind": "elevator",
+      "cameraCount": 5,
+      "manager": "반포안내센터",
+      "status": "official_unmatched"
+    },
+    {
+      "id": "seoul-hangang-양화한강공원-당산철교-승강기",
+      "park": "양화한강공원",
+      "name": "당산철교 승강기",
+      "kind": "elevator",
+      "cameraCount": 3,
+      "manager": "양화안내센터",
+      "status": "official_unmatched"
+    },
+    {
+      "id": "seoul-hangang-양화한강공원-양화대교-남단-상류-승강기",
+      "park": "양화한강공원",
+      "name": "양화대교 남단 상류 승강기",
+      "kind": "elevator",
+      "cameraCount": 3,
+      "manager": "양화안내센터",
+      "status": "official_unmatched"
+    },
+    {
+      "id": "seoul-hangang-양화한강공원-양화대교-남단-하류-승강기",
+      "park": "양화한강공원",
+      "name": "양화대교 남단 하류 승강기",
+      "kind": "elevator",
+      "cameraCount": 3,
+      "manager": "양화안내센터",
+      "status": "official_unmatched"
+    },
+    {
+      "id": "seoul-hangang-양화한강공원-월드컵대교남단-상류-승강기",
+      "park": "양화한강공원",
+      "name": "월드컵대교남단 상류 승강기",
+      "kind": "elevator",
+      "cameraCount": 3,
+      "manager": "양화안내센터",
+      "status": "official_unmatched"
+    },
+    {
+      "id": "seoul-hangang-양화한강공원-월드컵대교남단-하류-승강기",
+      "park": "양화한강공원",
+      "name": "월드컵대교남단 하류 승강기",
+      "kind": "elevator",
+      "cameraCount": 3,
+      "manager": "양화안내센터",
+      "status": "official_unmatched"
+    },
+    {
+      "id": "seoul-hangang-이촌한강공원-동작대교북단-하류-승강기",
+      "park": "이촌한강공원",
+      "name": "동작대교북단 하류 승강기",
+      "kind": "elevator",
+      "cameraCount": 3,
+      "manager": "이촌안내센터",
+      "status": "official_unmatched"
+    },
+    {
+      "id": "seoul-hangang-이촌한강공원-한강대교-상류-승강기",
+      "park": "이촌한강공원",
+      "name": "한강대교 상류 승강기",
+      "kind": "elevator",
+      "cameraCount": 3,
+      "manager": "이촌안내센터",
+      "status": "official_unmatched"
+    },
+    {
+      "id": "seoul-hangang-이촌한강공원-한강대교-하류-승강기",
+      "park": "이촌한강공원",
+      "name": "한강대교 하류 승강기",
+      "kind": "elevator",
+      "cameraCount": 3,
+      "manager": "이촌안내센터",
+      "status": "official_unmatched"
+    },
+    {
+      "id": "seoul-hangang-잠실한강공원-잠실대교-승강기",
+      "park": "잠실한강공원",
+      "name": "잠실대교 승강기",
+      "kind": "elevator",
+      "cameraCount": 3,
+      "manager": "잠실안내센터",
+      "status": "official_unmatched"
+    },
+    {
+      "id": "seoul-hangang-잠실한강공원-잠실철교-승강기",
+      "park": "잠실한강공원",
+      "name": "잠실철교 승강기",
+      "kind": "elevator",
+      "cameraCount": 3,
+      "manager": "잠실안내센터",
+      "status": "official_unmatched"
+    },
+    {
+      "id": "seoul-hangang-잠원한강공원-동호대교남단-승강기",
+      "park": "잠원한강공원",
+      "name": "동호대교남단 승강기",
+      "kind": "elevator",
+      "cameraCount": 3,
+      "manager": "잠원안내센터",
+      "status": "official_unmatched"
+    },
+    {
+      "id": "seoul-hangang-잠원한강공원-성수대교-승강기",
+      "park": "잠원한강공원",
+      "name": "성수대교 승강기",
+      "kind": "elevator",
+      "cameraCount": 4,
+      "manager": "잠원안내센터",
+      "status": "official_unmatched"
+    },
+    {
+      "id": "seoul-hangang-잠원한강공원-한남대교-승강기",
+      "park": "잠원한강공원",
+      "name": "한남대교 승강기",
+      "kind": "elevator",
+      "cameraCount": 3,
+      "manager": "잠원안내센터",
+      "status": "official_unmatched"
+    }
+  ]
+}

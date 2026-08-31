@@ -24,16 +24,22 @@ def main() -> None:
         "--release",
         help="Logical data release to publish. Omit to preserve the current manifest release.",
     )
+    parser.add_argument(
+        "--asset-version",
+        help="Use immutable <region>.places.<version>.sqlite asset names.",
+    )
     args = parser.parse_args()
     manifest_path = ROOT / "manifest.json"
     manifest = json.loads(manifest_path.read_text())
     if args.release:
         manifest["release"] = args.release
     manifest["generatedAt"] = datetime.now(timezone(timedelta(hours=9))).replace(microsecond=0).isoformat()
-    manifest["searchIndexes"] = {
-        region["id"]: asset(BUILD / f"{region['id']}.places.v2.sqlite")
-        for region in manifest["regions"]
-    }
+    manifest["searchIndexes"] = {}
+    for region in manifest["regions"]:
+        identifier = region["id"]
+        filename = (f"{identifier}.places.{args.asset_version}.sqlite"
+                    if args.asset_version else f"{identifier}.places.v2.sqlite")
+        manifest["searchIndexes"][identifier] = asset(BUILD / filename)
     manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")
 
 

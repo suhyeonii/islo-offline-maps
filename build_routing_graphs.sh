@@ -2,7 +2,7 @@
 set -euo pipefail
 
 source_pbf="build/south-korea-latest.osm.pbf"
-version="${ROUTING_VERSION:-v14}"
+version="${ROUTING_VERSION:-v24}"
 dem_dir="${DEM_DIR:-dem}"
 dem_args=()
 [[ -d "$dem_dir" ]] && dem_args=(--dem-dir "$dem_dir")
@@ -30,6 +30,7 @@ build_graph() {
       w/highway=cycleway w/highway=trunk w/highway=primary w/highway=secondary \
       w/highway=tertiary w/highway=service w/highway=footway w/highway=path \
       w/highway=pedestrian \
+      w/highway=steps w/highway=elevator n/highway=elevator \
       w/bicycle=designated w/bicycle=official \
       n/amenity=drinking_water n/amenity=toilets -o "$filtered"
     osmium cat "$filtered" -f opl | python3 ./build_routing_graph.py \
@@ -40,16 +41,13 @@ build_graph() {
     osmium cat "$filtered" -f opl | python3 ./build_routing_graph.py \
       --official-csv ./official_cycle_routes.csv "${dem_args[@]}" "$partial"
   fi
-  python3 ./build_routing_mld.py "$partial"
   mv "$partial" "$output"
   rm -f "$extracted" "$filtered"
 }
 
-# Nationwide backbone plus the same detailed region boundaries used by PMTiles.
-build_graph korea "" compact
-if [[ "${ROUTING_SCOPE:-all}" == "nationwide" ]]; then
-  exit 0
-fi
+# This script builds only optional detailed regional SQLite graphs. Nationwide
+# routing is produced exclusively by build_cch_input.sh and the CCH pipeline;
+# recreating a nationwide SQLite graph would duplicate the production package.
 regions=(
   "seoul|126.76,37.41,127.20,37.72" "busan|128.75,34.95,129.32,35.39"
   "daegu|128.35,35.55,129.02,36.02" "incheon|126.20,37.30,126.82,37.72"
@@ -62,5 +60,8 @@ regions=(
   "jeju|126.05,33.05,126.98,33.62"
 )
 for entry in "${regions[@]}"; do
+  if [[ -n "${ROUTING_REGION:-}" && "${entry%%|*}" != "$ROUTING_REGION" ]]; then
+    continue
+  fi
   build_graph "${entry%%|*}" "${entry#*|}" detail
 done
