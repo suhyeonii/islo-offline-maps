@@ -419,6 +419,7 @@ def main() -> None:
                          bridge_name TEXT,
                          crossing_wait_seconds INTEGER NOT NULL DEFAULT 0,
                          is_roundabout INTEGER NOT NULL DEFAULT 0,
+                         road_name TEXT,
                          PRIMARY KEY(src, dst)) WITHOUT ROWID;
       CREATE TABLE amenities(node_id INTEGER PRIMARY KEY, kind TEXT NOT NULL,
                              name TEXT, lat REAL NOT NULL, lon REAL NOT NULL);
@@ -427,7 +428,7 @@ def main() -> None:
                                   sequence INTEGER NOT NULL,
                                   PRIMARY KEY(node_id, route_id)) WITHOUT ROWID;
     """)
-    database.execute("INSERT INTO metadata VALUES('schemaVersion','13')")
+    database.execute("INSERT INTO metadata VALUES('schemaVersion','14')")
     graph_kind = "cch-input" if args.cch_input else ("compact" if args.compact else "detail")
     database.execute("INSERT INTO metadata VALUES('kind',?)", (graph_kind,))
     database.execute("INSERT INTO metadata VALUES('routingIndex','bidirectional-v1')")
@@ -567,19 +568,20 @@ def main() -> None:
                     or values.get("name:ko") or values.get("name")
                     if values.get("bridge") == "yes" else None
                 )
+                road_name = values.get("name:ko") or values.get("name")
                 pending_edges.append(
                     (edge_source, edge_destination, meters, meters * weight, is_cycleway, is_dedicated_cycleway, is_dismount, interruption_kind, interruption_name, int(values.get("bridge") == "yes"), bridge_name,
-                     reverse_crossing_wait if reverse else forward_crossing_wait, int(is_roundabout))
+                     reverse_crossing_wait if reverse else forward_crossing_wait, int(is_roundabout), road_name)
                 )
                 if not oneway and not reverse:
                     pending_edges.append((destination, source, meters, meters * weight, is_cycleway, is_dedicated_cycleway, is_dismount, interruption_kind, interruption_name, int(values.get("bridge") == "yes"), bridge_name,
-                                          reverse_crossing_wait, int(is_roundabout)))
+                                          reverse_crossing_wait, int(is_roundabout), road_name))
                 if len(pending_edges) >= 100_000:
-                    database.executemany("INSERT OR REPLACE INTO edges VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)", pending_edges)
+                    database.executemany("INSERT OR REPLACE INTO edges VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)", pending_edges)
                     pending_edges.clear()
 
     database.executemany("INSERT OR IGNORE INTO nodes VALUES(?,?,?,?)", pending_nodes)
-    database.executemany("INSERT OR REPLACE INTO edges VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)", pending_edges)
+    database.executemany("INSERT OR REPLACE INTO edges VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)", pending_edges)
     database.executemany("INSERT OR REPLACE INTO amenities VALUES(?,?,?,?,?)", pending_amenities)
     if args.cch_input:
         # CCH owns its node order, adjacency and spatial index. Reverse-edge
