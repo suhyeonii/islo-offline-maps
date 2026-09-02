@@ -1,7 +1,9 @@
 #!/bin/zsh
 set -euo pipefail
 
-source_pbf="build/south-korea-latest.osm.pbf"
+# 지도 PMTiles와 동일한 검증 완료 스냅샷을 받아야 검색 결과와 지도 피처의
+# OSM 식별자가 어긋나지 않습니다.
+source_pbf="${SOURCE_PBF:-build/south-korea-latest.osm.pbf}"
 place_version="${PLACE_VERSION:-v2}"
 regions=(
   "seoul|126.76,37.41,127.20,37.72" "busan|128.75,34.95,129.32,35.39"

@@ -9,7 +9,9 @@ release="${ISLO_MAP_RELEASE:-v0.1.0}"
 manifest_release="${ISLO_MAP_MANIFEST_RELEASE:-v0.1.2-individual-poi-points}"
 snapshot_version="${ISLO_SNAPSHOT_VERSION:-20260827}"
 publish="${ISLO_PUBLISH:-1}"
-source_pbf="build/south-korea-latest.osm.pbf"
+# 새 스냅샷은 기존 마지막 정상 원본을 덮어쓰지 않고 명시적으로 지정해
+# 생성·검증합니다. manifest 교체 전 실패해도 기존 배포를 재현할 수 있습니다.
+source_pbf="${SOURCE_PBF:-build/south-korea-latest.osm.pbf}"
 tilemaker_config="/workspace/tilemaker-islo-config.json"
 tilemaker_process="/workspace/tilemaker-islo-process.lua"
 
