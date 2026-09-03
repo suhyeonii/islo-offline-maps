@@ -107,12 +107,10 @@ class BicycleProfileTests(unittest.TestCase):
             {"highway": "service", "access": "no"}, False
         ))
 
-    def test_bicycle_prohibited_bridge_is_walk_bike_fallback_only(self):
-        profile = bicycle_profile(
+    def test_bicycle_prohibited_bridge_is_excluded(self):
+        self.assertIsNone(bicycle_profile(
             {"highway": "primary", "bridge": "yes", "bicycle": "no"}, False
-        )
-        self.assertIsNotNone(profile)
-        self.assertGreaterEqual(profile[0], 8)
+        ))
 
     def test_rejects_unmapped_hiking_and_bad_surface_paths(self):
         self.assertIsNone(bicycle_profile(
@@ -186,7 +184,7 @@ class BicycleProfileTests(unittest.TestCase):
         self.assertGreaterEqual(pedestrian[0], 3.8)
         self.assertIsNone(unknown_path)
         self.assertGreaterEqual(paved_path[0], 4.2)
-        self.assertGreaterEqual(prohibited_riding[0], 3.8)
+        self.assertIsNone(prohibited_riding)
 
     def test_rejects_trail_metadata_even_when_surface_is_missing(self):
         self.assertIsNone(bicycle_profile(

@@ -3,6 +3,7 @@ import argparse
 import sqlite3
 import sys
 import re
+import unicodedata
 
 
 def decode_opl(value: str) -> str:
@@ -24,6 +25,17 @@ def tags(raw: str) -> dict[str, str]:
             key, value = item.split("=", 1)
             result[decode_opl(key)] = decode_opl(value)
     return result
+
+
+def search_key(value: str | None) -> str:
+    """A stable key for search text, independent of spacing and punctuation.
+
+    Keep the display name untouched, but index this compact form as well so a
+    user can find both "이케아 광명점" and "이케아광명점".  The iOS client uses
+    the same rule for the query.
+    """
+    normalized = unicodedata.normalize("NFKC", value or "").casefold()
+    return "".join(character for character in normalized if character.isalnum())
 
 
 parser = argparse.ArgumentParser()
@@ -163,18 +175,25 @@ for line in sys.stdin:
         "searchTerms": " ".join(filter(None, [
             name, item_tags.get("name:ko"), item_tags.get("name:en"),
             address, category, item_tags.get("brand")
+        ])),
+        # Keep each alias as its own FTS token. Joining before compacting would
+        # turn Korean and English aliases into one unusable mega-token.
+        "searchKey": " ".join(filter(None, [
+            search_key(value) for value in [
+                name, item_tags.get("name:ko"), item_tags.get("name:en"), item_tags.get("brand")
+            ]
         ]))
     })
 
 database = sqlite3.connect(args.output)
 database.execute("DROP TABLE IF EXISTS places")
 database.execute("CREATE VIRTUAL TABLE places USING fts5(id UNINDEXED,osm_type UNINDEXED,osm_id UNINDEXED,name,name_ko,name_en,subtitle,"
-                 "category,address,latitude UNINDEXED,longitude UNINDEXED,searchTerms,tokenize='unicode61')")
+                 "category,address,latitude UNINDEXED,longitude UNINDEXED,searchTerms,searchKey,tokenize='unicode61')")
 database.executemany(
-    "INSERT INTO places(id,osm_type,osm_id,name,name_ko,name_en,subtitle,category,address,latitude,longitude,searchTerms) "
-    "VALUES(?,?,?,?,?,?,?,?,?,?,?,?)",
+    "INSERT INTO places(id,osm_type,osm_id,name,name_ko,name_en,subtitle,category,address,latitude,longitude,searchTerms,searchKey) "
+    "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)",
     [(item["id"], item["osm_type"], item["osm_id"], item["name"], item["name_ko"], item["name_en"], item["subtitle"],
-      item["category"], item["address"], item["latitude"], item["longitude"], item["searchTerms"])
+      item["category"], item["address"], item["latitude"], item["longitude"], item["searchTerms"], item["searchKey"])
      for item in places]
 )
 database.commit()

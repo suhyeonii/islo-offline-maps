@@ -9,6 +9,7 @@ release="${ISLO_MAP_RELEASE:-v0.1.0}"
 manifest_release="${ISLO_MAP_MANIFEST_RELEASE:-v0.1.2-individual-poi-points}"
 snapshot_version="${ISLO_SNAPSHOT_VERSION:-20260827}"
 publish="${ISLO_PUBLISH:-1}"
+region_ids=",${ISLO_REGION_IDS:-},"
 # 새 스냅샷은 기존 마지막 정상 원본을 덮어쓰지 않고 명시적으로 지정해
 # 생성·검증합니다. manifest 교체 전 실패해도 기존 배포를 재현할 수 있습니다.
 source_pbf="${SOURCE_PBF:-build/south-korea-latest.osm.pbf}"
@@ -19,23 +20,30 @@ regions=(
   "seoul|126.76,37.41,127.20,37.72"
   "busan|128.75,34.95,129.32,35.39"
   "daegu|128.35,35.55,129.02,36.02"
-  "incheon|126.20,37.30,126.82,37.72"
+  # 서해 5도(백령도 124.6E 포함)까지 인천 행정구역 전체를 보존합니다.
+  "incheon|124.30,36.85,126.82,38.20"
   "gwangju|126.64,35.00,127.02,35.30"
   "daejeon|127.18,36.17,127.56,36.50"
   "ulsan|129.00,35.30,129.49,35.73"
   "sejong|127.12,36.42,127.38,36.73"
   "gyeonggi|126.36,36.88,127.86,38.30"
-  "gangwon|127.05,37.02,129.37,38.62"
+  "gangwon|127.05,37.02,129.60,38.70"
   "chungbuk|127.25,36.00,128.65,37.25"
-  "chungnam|125.95,35.95,127.65,37.10"
-  "jeonbuk|126.30,35.28,127.88,36.18"
-  "jeonnam|125.85,33.90,127.88,35.50"
-  "gyeongbuk|127.80,35.55,130.95,37.58"
-  "gyeongnam|127.55,34.55,129.25,35.95"
-  "jeju|126.05,33.05,126.98,33.62"
+  "chungnam|125.30,35.80,127.65,37.15"
+  "jeonbuk|125.65,35.20,127.88,36.22"
+  # 가거도·홍도 등 전남 외곽 도서를 포함합니다.
+  "jeonnam|124.85,33.65,127.95,35.55"
+  # 울릉도와 독도까지 경북 지도 한 권역에 포함합니다.
+  "gyeongbuk|127.80,35.55,132.05,37.65"
+  "gyeongnam|127.45,34.35,129.35,35.95"
+  # 추자도를 포함하도록 제주 북쪽 범위를 전남 해역까지 확장합니다.
+  "jeju|125.95,33.00,127.10,34.15"
 )
 for entry in "${regions[@]}"; do
   id="${entry%%|*}"
+  if [[ "$region_ids" != ",," && "$region_ids" != *",${id},"* ]]; then
+    continue
+  fi
   bbox="${entry#*|}"
   pbf="build/${id}.osm.pbf"
   # Immutable filename: never replace the bytes referenced by the currently
@@ -84,7 +92,7 @@ done
 
 # Publish the manifest only after all replacement assets are uploaded, so an
 # app never receives a checksum for an asset that is not available yet.
-if [[ "$publish" == "1" ]]; then
+if [[ "$publish" == "1" && "$region_ids" == ",," ]]; then
   python3 refresh_map_manifest.py --release "$manifest_release" --asset-release "$release" \
     --filename-version "$snapshot_version"
   gh release upload "$release" manifest.json --repo "$repo" --clobber

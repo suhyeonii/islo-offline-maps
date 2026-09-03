@@ -1,0 +1,10 @@
+[
+  {
+    "id": "mapo-central-library-pedestrian-bridge-east-approach",
+    "from": { "latitude": 37.5640945, "longitude": 126.9072266 },
+    "to": { "latitude": 37.5641455, "longitude": 126.9074092 },
+    "maxSnapMeters": 4.0,
+    "crossingWaitSeconds": 45,
+    "reason": "현장 확인된 성산로 보행교·횡단보도 자전거 접근 연결"
+  }
+]

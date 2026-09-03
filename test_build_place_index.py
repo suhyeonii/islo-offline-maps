@@ -96,6 +96,27 @@ class PlaceIdentityTests(unittest.TestCase):
             ],
         )
 
+    def test_compact_search_key_matches_spacing_independent_korean_name(self):
+        with tempfile.TemporaryDirectory() as directory:
+            database = Path(directory) / "places.sqlite"
+            subprocess.run(
+                [sys.executable, str(SCRIPT), str(database)],
+                input="n41 v1 dV c0 t0 i0 u Tname=이케아%20%광명점,shop=supermarket x127.0 y37.0\n",
+                text=True,
+                check=True,
+            )
+            connection = sqlite3.connect(database)
+            try:
+                self.assertEqual(
+                    connection.execute(
+                        "SELECT name FROM places WHERE places MATCH ?",
+                        ("searchKey:이케아광명점*",),
+                    ).fetchall(),
+                    [("이케아 광명점",)],
+                )
+            finally:
+                connection.close()
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -165,11 +165,6 @@ def bicycle_profile(values: dict[str, str], compact: bool) -> tuple[float, int, 
         and not values.get("sac_scale")
         and surface not in UNSUITABLE_CITY_BICYCLE_SURFACES
     )
-    forced_dismount_bridge = (
-        bicycle == "no"
-        and values.get("bridge") == "yes"
-        and highway in {"primary", "secondary", "tertiary"}
-    )
     pedestrian_connector = walkable_dismount or (
         foot in ALLOWED_BICYCLE
         and highway in {"footway", "pedestrian", "path", "service"}
@@ -181,7 +176,11 @@ def bicycle_profile(values: dict[str, str], compact: bool) -> tuple[float, int, 
     if values.get("motorroad") == "yes":
         return None
     if (
-        (bicycle in FORBIDDEN_ACCESS and not forced_dismount_bridge and not walkable_dismount)
+        # `bicycle=no`은 자전거 통행 금지입니다. 교량이나 보행로라도
+        # 자전거 경로의 "최후 수단"으로 되살리지 않습니다. 실제로 자전거를
+        # 끌고 통과하도록 허용한 경우에는 OSM에 bicycle=dismount 또는
+        # bicycle=yes 같은 명시 태그가 있어야 합니다.
+        (bicycle in FORBIDDEN_ACCESS)
         or (access in FORBIDDEN_ACCESS and not bicycle_allowed and not pedestrian_connector)
         or (vehicle in FORBIDDEN_ACCESS and not bicycle_allowed and not pedestrian_connector)
         or highway in {"motorway", "motorway_link"}
@@ -206,11 +205,6 @@ def bicycle_profile(values: dict[str, str], compact: bool) -> tuple[float, int, 
         if values.get("sac_scale") or surface in UNSUITABLE_CITY_BICYCLE_SURFACES:
             return None
         return (3.8, 0, 0)
-    if forced_dismount_bridge:
-        # Do not ever treat a bicycle-prohibited bridge as a riding route. It is
-        # retained solely as a costly push-bike fallback when it is the only
-        # mapped way to an otherwise isolated public destination.
-        return (8.0, 0, 0)
     if highway == "path":
         is_hiking_path = (
             bool(values.get("sac_scale"))

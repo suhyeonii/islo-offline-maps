@@ -11,6 +11,7 @@
     "transportation_name": { "minzoom": 8, "maxzoom": 14 },
     "building": { "minzoom": 13, "maxzoom": 14 },
     "water": { "minzoom": 6, "maxzoom": 14, "simplify_below": 12, "simplify_level": 0.0003, "simplify_algorithm": "visvalingam" },
+    "coastline": { "minzoom": 0, "maxzoom": 14, "simplify_below": 11, "simplify_level": 0.00008 },
     "water_name": { "minzoom": 14, "maxzoom": 14 },
     "water_name_detail": { "minzoom": 14, "maxzoom": 14, "write_to": "water_name" },
     "aeroway": { "minzoom": 11, "maxzoom": 14 },

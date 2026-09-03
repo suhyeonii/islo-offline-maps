@@ -143,7 +143,12 @@ int main(int argc, char** argv) try {
         // 계단은 기본 자전거 경로에서 사실상 통과 불가로 처리합니다. CCH의
         // topology에는 남겨 두어 다른 접근이 전혀 없는 목적지만 최후 수단으로
         // 연결할 수 있지만, 일반 도로 우회와 경쟁하지 못하게 합니다.
-        constexpr double stair_last_resort_cost = 50'000.0;
+        // 계단은 정상 자전거 우회가 한 번이라도 존재하면 절대로 선택되면
+        // 안 됩니다. 50 km 벌점은 장거리 우회와 경쟁할 수 있었으므로,
+        // UInt32 CCH 가중치 범위 안에서 사실상 무한대에 가까운 벌점으로
+        // 올립니다. topology에는 남겨 목적지가 계단으로만 연결된 경우에만
+        // 최후 수단으로 복원됩니다.
+        constexpr double stair_last_resort_cost = 200'000'000.0;
         const bool stairs = interruption == 2;
         shortest_weight.push_back(bounded_weight((stairs ? stair_last_resort_cost : meters) * 10.0));
         bicycle_weight.push_back(bounded_weight((stairs ? stair_last_resort_cost : cost) * 10.0));

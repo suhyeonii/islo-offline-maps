@@ -78,6 +78,9 @@ def main() -> int:
             ".flat.forward.u32",
             ".flat.backward.u32",
             ".flat.input_weight.u32",
+            ".stairs_fallback.forward.u32",
+            ".stairs_fallback.backward.u32",
+            ".stairs_fallback.input_weight.u32",
         )
     ]
     required_files += [

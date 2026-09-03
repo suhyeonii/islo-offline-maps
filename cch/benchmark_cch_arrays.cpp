@@ -123,11 +123,17 @@ int main(int argc, char** argv) try {
     std::vector<unsigned> bicycle_weight(head.size());
     std::vector<unsigned> shortest_weight(head.size());
     std::vector<unsigned> flat_weight(head.size());
+    // The normal three recommendations must never traverse stairs.  A separate
+    // fallback metric retains them only for destinations that are otherwise
+    // disconnected, so a large penalty can never compete with a valid detour.
+    std::vector<unsigned> stairs_fallback_weight(head.size());
     std::uint64_t official_arc_count = 0;
     std::uint64_t interruption_arc_count = 0;
     for (std::size_t arc = 0; arc < head.size(); ++arc) {
         const double normalized = static_cast<double>(comfort[arc] - min_comfort) / comfort_span;
-        shortest_weight[arc] = scaled_weight(distance[arc], 1.0);
+        const bool stairs = (flags[arc] & (1 << 1)) != 0;
+        shortest_weight[arc] = stairs
+            ? RoutingKit::inf_weight : scaled_weight(distance[arc], 1.0);
         double bicycle_factor = 1.65 - normalized * 1.15;
         if (road_class[arc] >= 2) bicycle_factor *= 0.55;
         else if (road_class[arc] == 1) bicycle_factor *= 0.78;
@@ -141,22 +147,34 @@ int main(int argc, char** argv) try {
             ++interruption_arc_count;
         }
         const double crossing_equivalent_meters = crossing_wait[arc] * 4.2;
-        bicycle_weight[arc] = static_cast<unsigned>(std::min<double>(
+        const unsigned bicycle_cost = static_cast<unsigned>(std::min<double>(
             RoutingKit::inf_weight - 1,
             std::max(1.0, (distance[arc] * bicycle_factor + crossing_equivalent_meters) * 10.0)));
+        bicycle_weight[arc] = stairs ? RoutingKit::inf_weight : bicycle_cost;
+        // This metric is queried only after all stair-free profiles report no
+        // path.  Keep its cost finite so a true last-resort staircase can be
+        // reconstructed and announced.
+        // The iOS mmap query reserves values above roughly 1.07B as infinity.
+        // Keep the fallback below that sentinel (20,000 km equivalent) so an
+        // actually isolated destination can still be connected, while the
+        // normal profiles above remain mathematically stair-free.
+        constexpr unsigned stair_last_resort_weight = 200'000'000u;
+        stairs_fallback_weight[arc] = stairs ? stair_last_resort_weight : bicycle_cost;
         const double flat_distance = distance[arc] * bicycle_factor
             + static_cast<double>(elevation_gain[arc]) * 22.0
             + crossing_equivalent_meters + (interruption ? 180.0 : 0.0);
-        flat_weight[arc] = static_cast<unsigned>(std::min<double>(
+        flat_weight[arc] = stairs ? RoutingKit::inf_weight : static_cast<unsigned>(std::min<double>(
             RoutingKit::inf_weight - 1, std::max(1.0, flat_distance * 10.0)));
     }
     const auto customize_started = Clock::now();
     RoutingKit::CustomizableContractionHierarchyMetric bicycle(cch, bicycle_weight);
     RoutingKit::CustomizableContractionHierarchyMetric shortest(cch, shortest_weight);
     RoutingKit::CustomizableContractionHierarchyMetric flat(cch, flat_weight);
+    RoutingKit::CustomizableContractionHierarchyMetric stairs_fallback(cch, stairs_fallback_weight);
     bicycle.customize();
     shortest.customize();
     flat.customize();
+    stairs_fallback.customize();
     const double customize_ms = elapsed_ms(customize_started);
 
     RoutingKit::CustomizableContractionHierarchyQuery query(bicycle);
@@ -183,10 +201,11 @@ int main(int argc, char** argv) try {
          + cch.first_extra_backward_input_arc_of_cch.size()
          + cch.extra_forward_input_arc_of_cch.size() + cch.extra_backward_input_arc_of_cch.size())
         * sizeof(unsigned);
-    const std::uint64_t three_metric_bytes =
+    const std::uint64_t four_metric_bytes =
         (bicycle.forward.size() + bicycle.backward.size()
          + shortest.forward.size() + shortest.backward.size()
-         + flat.forward.size() + flat.backward.size()) * sizeof(unsigned);
+         + flat.forward.size() + flat.backward.size()
+         + stairs_fallback.forward.size() + stairs_fallback.backward.size()) * sizeof(unsigned);
 
     if (!output_prefix.empty()) {
         auto save = [&](const char* suffix, const std::vector<unsigned>& values) {
@@ -224,6 +243,9 @@ int main(int argc, char** argv) try {
         save(".flat.forward.u32", flat.forward);
         save(".flat.backward.u32", flat.backward);
         save(".flat.input_weight.u32", flat_weight);
+        save(".stairs_fallback.forward.u32", stairs_fallback.forward);
+        save(".stairs_fallback.backward.u32", stairs_fallback.backward);
+        save(".stairs_fallback.input_weight.u32", stairs_fallback_weight);
     }
 
     std::cout << "{\n"
@@ -243,7 +265,7 @@ int main(int argc, char** argv) try {
               << "  \"queryP95Ms\": " << query_ms[94] << ",\n"
               << "  \"queryMaxMs\": " << query_ms.back() << ",\n"
               << "  \"estimatedTopologyBytes\": " << topology_bytes << ",\n"
-              << "  \"estimatedThreeMetricBytes\": " << three_metric_bytes << ",\n"
+              << "  \"estimatedFourMetricBytes\": " << four_metric_bytes << ",\n"
               << "  \"loadMs\": " << load_ms << ",\n"
               << "  \"orderMs\": " << order_ms << ",\n"
               << "  \"topologyMs\": " << topology_ms << ",\n"
