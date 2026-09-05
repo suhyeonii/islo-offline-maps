@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "release": "v0.1.23-cch-v10-verified-connectors",
-  "generatedAt": "2026-09-03T02:21:08+09:00",
+  "release": "v0.1.24-seoul-map-20260904",
+  "generatedAt": "2026-09-05T16:31:00+09:00",
   "baseURL": "https://github.com/suhyeonii/islo-offline-maps/releases/download/v0.1.0",
   "nationwideCCH": {
     "version": "korea-cch-v10",
@@ -177,10 +177,10 @@
       "north": 37.72,
       "east": 127.2,
       "available": true,
-      "mapFile": "seoul.map.20260831.pmtiles",
-      "size": 34279560,
-      "sha256": "205b236c18de9d973133ed16b79992626a959151bc0214c4d794fa6c3a284afe",
-      "mapVersion": "v0.1.21-map-20260831"
+      "mapFile": "seoul.map.20260904.pmtiles",
+      "size": 34364757,
+      "sha256": "f7cd08f518ded6d4fc398b543021ecd8a4503448c65333e7904f5cb303f99453",
+      "mapVersion": "v0.1.24-map-20260904"
     },
     {
       "id": "busan",
