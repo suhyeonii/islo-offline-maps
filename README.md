@@ -12,6 +12,31 @@ The iOS app reads `manifest.json`, verifies SHA-256 checksums, downloads the
 selected region, then imports all three files atomically. A nationwide download
 is the ordered download of every available region.
 
+## Atomic regional-map snapshot rule
+
+Regional PMTiles bounding boxes overlap. A changed OSM object and every region
+whose bounds intersect that object's bounds form one atomic update cohort.
+Never publish only one member of that cohort: the same OSM way can otherwise be
+drawn once with its old geometry and again with its updated geometry.
+
+Use either of these publication modes:
+
+- Full update: rebuild and publish every region together when refreshing the
+  nationwide source snapshot or applying broad map-generation changes.
+- Scoped update: rebuild only the changed area and every overlapping region
+  that can contain the same OSM objects.
+
+- `ISLO_REGION_IDS=... ISLO_PUBLISH=0` is allowed for local diagnosis.
+- A partial public update must also provide
+  `ISLO_CHANGED_BBOX=west,south,east,north`. The build script automatically
+  adds every intersecting region to the update cohort.
+- Every member of that cohort must use one immutable `ISLO_SNAPSHOT_VERSION`
+  and one `SOURCE_PBF`.
+- Upload and checksum-verify every PMTiles asset first.
+- Upload `manifest.json` last, so clients can only observe a complete snapshot.
+- The app still suppresses broader overlapping sources at neighbourhood zoom;
+  that is a runtime safety net, not permission to publish mixed snapshots.
+
 ## Compressed release assets
 
 Routing and search SQLite databases can be distributed as LZFSE streams while

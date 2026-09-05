@@ -10,6 +10,7 @@ manifest_release="${ISLO_MAP_MANIFEST_RELEASE:-v0.1.2-individual-poi-points}"
 snapshot_version="${ISLO_SNAPSHOT_VERSION:-20260827}"
 publish="${ISLO_PUBLISH:-1}"
 region_ids=",${ISLO_REGION_IDS:-},"
+changed_bbox="${ISLO_CHANGED_BBOX:-}"
 # 새 스냅샷은 기존 마지막 정상 원본을 덮어쓰지 않고 명시적으로 지정해
 # 생성·검증합니다. manifest 교체 전 실패해도 기존 배포를 재현할 수 있습니다.
 source_pbf="${SOURCE_PBF:-build/south-korea-latest.osm.pbf}"
@@ -39,6 +40,35 @@ regions=(
   # 추자도를 포함하도록 제주 북쪽 범위를 전남 해역까지 확장합니다.
   "jeju|125.95,33.00,127.10,34.15"
 )
+
+# 부분 배포는 변경된 OSM 객체의 bbox와 겹치는 모든 권역을 같은 원본으로
+# 함께 갱신해야 합니다. 요청 목록에 빠진 연관 권역은 자동으로 추가합니다.
+# 예: 서울 서부 변경은 서울과 경기 PMTiles를 한 배포 단위로 묶습니다.
+if [[ "$publish" == "1" && "$region_ids" != ",," && -z "$changed_bbox" ]]; then
+  echo "Refusing unscoped partial map publication: set ISLO_CHANGED_BBOX=west,south,east,north." >&2
+  exit 2
+fi
+if [[ -n "$changed_bbox" ]]; then
+  changed=("${(@s:,:)changed_bbox}")
+  if (( ${#changed[@]} != 4 )); then
+    echo "Invalid ISLO_CHANGED_BBOX: expected west,south,east,north." >&2
+    exit 2
+  fi
+  for entry in "${regions[@]}"; do
+    id="${entry%%|*}"
+    bounds="${entry#*|}"
+    b=("${(@s:,:)bounds}")
+    if awk -v aw="${changed[1]}" -v as="${changed[2]}" \
+      -v ae="${changed[3]}" -v an="${changed[4]}" \
+      -v bw="${b[1]}" -v bs="${b[2]}" -v be="${b[3]}" -v bn="${b[4]}" \
+      'BEGIN { exit !((aw <= be) && (ae >= bw) && (as <= bn) && (an >= bs)) }'; then
+      if [[ "$region_ids" != *",${id},"* ]]; then
+        region_ids="${region_ids%,},${id},"
+        echo "Including overlapping region ${id}"
+      fi
+    fi
+  done
+fi
 for entry in "${regions[@]}"; do
   id="${entry%%|*}"
   if [[ "$region_ids" != ",," && "$region_ids" != *",${id},"* ]]; then
@@ -92,8 +122,14 @@ done
 
 # Publish the manifest only after all replacement assets are uploaded, so an
 # app never receives a checksum for an asset that is not available yet.
-if [[ "$publish" == "1" && "$region_ids" == ",," ]]; then
-  python3 refresh_map_manifest.py --release "$manifest_release" --asset-release "$release" \
-    --filename-version "$snapshot_version"
+if [[ "$publish" == "1" ]]; then
+  if [[ "$region_ids" == ",," ]]; then
+    python3 refresh_map_manifest.py --release "$manifest_release" --asset-release "$release" \
+      --filename-version "$snapshot_version"
+  else
+    python3 refresh_partial_map_manifest.py --release "$manifest_release" \
+      --asset-release "$release" --filename-version "$snapshot_version" \
+      --regions "${region_ids#,}"
+  fi
   gh release upload "$release" manifest.json --repo "$repo" --clobber
 fi

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "release": "v0.1.24-seoul-map-20260904",
-  "generatedAt": "2026-09-05T16:31:00+09:00",
+  "release": "v0.1.25-gyeonggi-map-20260905",
+  "generatedAt": "2026-09-05T17:37:57+09:00",
   "baseURL": "https://github.com/suhyeonii/islo-offline-maps/releases/download/v0.1.0",
   "nationwideCCH": {
     "version": "korea-cch-v10",
@@ -281,10 +281,10 @@
       "north": 38.3,
       "east": 127.86,
       "available": true,
-      "mapFile": "gyeonggi.map.20260831.pmtiles",
-      "size": 108425596,
-      "sha256": "ff7e52358399330625ef4c1a3483c6ec454c9505557f67f4f1af8606f9d0c8f3",
-      "mapVersion": "v0.1.21-map-20260831"
+      "mapFile": "gyeonggi.map.20260905.pmtiles",
+      "size": 109131136,
+      "sha256": "ebfd78a36f8b0c47e55561f4be8b99f35d2e51c4cdd6bafc05d433a61e305301",
+      "mapVersion": "v0.1.25-gyeonggi-map-20260905"
     },
     {
       "id": "gangwon",
